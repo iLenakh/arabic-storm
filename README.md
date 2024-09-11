@@ -147,8 +147,8 @@ We provide scripts in our [examples folder](examples) as a quick start to run ST
 2. Run the following command.
     ```
     python examples/run_storm_wiki_gpt.py \
-        --output-dir $OUTPUT_DIR \
-        --retriever you \
+        --output-dir /Applications/XAMPP/xamppfiles/htdocs/arabic-storm/output \
+        --retriever bing \
         --do-research \
         --do-generate-outline \
         --do-generate-article \
