@@ -30,36 +30,38 @@ from knowledge_storm.utils import load_api_key
 def main(args):
     load_api_key(toml_file_path='secrets.toml')
     lm_configs = STORMWikiLMConfigs()
-    
     openai_kwargs = {
         'api_key': os.getenv("OPENAI_API_KEY"),
         'temperature': 1.0,
         'top_p': 0.9,
     }
 
-    # Always use GPT-3.5 regardless of API type.
     ModelClass = OpenAIModel if os.getenv('OPENAI_API_TYPE') == 'openai' else AzureOpenAIModel
-    gpt_35_model_name = 'gpt-3.5-turbo'  # Always use GPT-3.5
-
+    # If you are using Azure service, make sure the model name matches your own deployed model name.
+    # The default name here is only used for demonstration and may not match your case.
+    gpt_35_model_name = 'gpt-3.5-turbo' if os.getenv('OPENAI_API_TYPE') == 'openai' else 'gpt-35-turbo'
+    gpt_4_model_name = 'gpt-4o'
     if os.getenv('OPENAI_API_TYPE') == 'azure':
         openai_kwargs['api_base'] = os.getenv('AZURE_API_BASE')
         openai_kwargs['api_version'] = os.getenv('AZURE_API_VERSION')
 
-    # Assign GPT-3.5 to all components
+    # STORM is a LM system so different components can be powered by different models.
+    # For a good balance between cost and quality, you can choose a cheaper/faster model for conv_simulator_lm
+    # which is used to split queries, synthesize answers in the conversation. We recommend using stronger models
+    # for outline_gen_lm which is responsible for organizing the collected information, and article_gen_lm
+    # which is responsible for generating sections with citations.
     conv_simulator_lm = ModelClass(model=gpt_35_model_name, max_tokens=500, **openai_kwargs)
     question_asker_lm = ModelClass(model=gpt_35_model_name, max_tokens=500, **openai_kwargs)
-    outline_gen_lm = ModelClass(model=gpt_35_model_name, max_tokens=400, **openai_kwargs)
-    article_gen_lm = ModelClass(model=gpt_35_model_name, max_tokens=700, **openai_kwargs)
-    article_polish_lm = ModelClass(model=gpt_35_model_name, max_tokens=4000, **openai_kwargs)
+    outline_gen_lm = ModelClass(model=gpt_4_model_name, max_tokens=400, **openai_kwargs)
+    article_gen_lm = ModelClass(model=gpt_4_model_name, max_tokens=700, **openai_kwargs)
+    article_polish_lm = ModelClass(model=gpt_4_model_name, max_tokens=4000, **openai_kwargs)
 
-    # Configure the LM components with GPT-3.5 models
     lm_configs.set_conv_simulator_lm(conv_simulator_lm)
     lm_configs.set_question_asker_lm(question_asker_lm)
     lm_configs.set_outline_gen_lm(outline_gen_lm)
     lm_configs.set_article_gen_lm(article_gen_lm)
     lm_configs.set_article_polish_lm(article_polish_lm)
 
-    # The rest of the script remains unchanged.
     engine_args = STORMWikiRunnerArguments(
         output_dir=args.output_dir,
         max_conv_turn=args.max_conv_turn,
@@ -100,7 +102,6 @@ def main(args):
     )
     runner.post_run()
     runner.summary()
-
 
 
 if __name__ == '__main__':
