@@ -87,8 +87,8 @@ class BingSearch(dspy.Retrieve):
         min_char_count: int = 150,
         snippet_chunk_size: int = 1000,
         webpage_helper_max_threads=10,
-        mkt="en-US",
-        language="en",
+        mkt="ar-SA",
+        language="ar",
         **kwargs,
     ):
         """
