@@ -85,12 +85,18 @@ class PolishPageModule(dspy.Module):
         self.polish_page = dspy.Predict(PolishPage)
 
     def forward(self, topic: str, draft_page: str, polish_whole_page: bool = True):
+        # Step 1: Remove the specific phrase "مصادر عربية"
+        draft_page = draft_page.replace("مصادر عربية", "")
+
+        # Step 2: Generate the lead section using the language model
         with dspy.settings.context(lm=self.write_lead_engine):
             lead_section = self.write_lead(
                 topic=topic, draft_page=draft_page
             ).lead_section
             if "The lead section:" in lead_section:
                 lead_section = lead_section.split("The lead section:")[1].strip()
+
+        # Step 3: Polish the entire page if polish_whole_page is set to True
         if polish_whole_page:
             with dspy.settings.context(lm=self.polish_engine):
                 page = self.polish_page(draft_page=draft_page).page

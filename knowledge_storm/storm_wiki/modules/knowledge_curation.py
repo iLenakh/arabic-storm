@@ -160,7 +160,7 @@ class QuestionToQuery(dspy.Signature):
     - query n"""
 
     topic = dspy.InputField(prefix="Topic you are discussing about: ", format=str)
-    question = dspy.InputField(prefix="Question you want to answer: ", format=str)
+    question = dspy.InputField(prefix="Question you want to answer (Your answer shall be in arabic): ", format=str)
     queries = dspy.OutputField(format=str)
 
 
@@ -173,7 +173,7 @@ class AnswerQuestion(dspy.Signature):
     conv = dspy.InputField(prefix="Question:\n", format=str)
     info = dspy.InputField(prefix="Gathered information:\n", format=str)
     answer = dspy.OutputField(
-        prefix="Now give your response. (Try to use as many different sources as possible and add do not hallucinate.)\n",
+        prefix="Now give your response. (use only ARABIC sources and add do not hallucinate.)\n",
         format=str,
     )
 

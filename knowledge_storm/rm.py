@@ -13,7 +13,6 @@ from qdrant_client import QdrantClient
 
 from .utils import WebPageHelper
 
-
 class YouRM(dspy.Retrieve):
     def __init__(self, ydc_api_key=None, k=3, is_valid_source: Callable = None):
         super().__init__(k=k)
@@ -39,6 +38,10 @@ class YouRM(dspy.Retrieve):
 
         return {"YouRM": usage}
 
+    def is_arabic_text(self, text: str) -> bool:
+        """Check if the text contains Arabic characters."""
+        return bool(re.search(r'[\u0600-\u06FF]', text))
+
     def forward(
         self, query_or_queries: Union[str, List[str]], exclude_urls: List[str] = []
     ):
@@ -46,7 +49,7 @@ class YouRM(dspy.Retrieve):
 
         Args:
             query_or_queries (Union[str, List[str]]): The query or queries to search for.
-            exclude_urls (List[str]): A list of urls to exclude from the search results.
+            exclude_urls (List[str]): A list of URLs to exclude from the search results.
 
         Returns:
             a list of Dicts, each dict has keys of 'description', 'snippets' (list of strings), 'title', 'url'
@@ -56,6 +59,11 @@ class YouRM(dspy.Retrieve):
             if isinstance(query_or_queries, str)
             else query_or_queries
         )
+        
+        # Prepend an Arabic keyword or phrase to the queries
+        arabic_phrase = "موقع"  # Example: "موقع" (meaning "site" in Arabic)
+        queries = [f"{arabic_phrase} {query}" for query in queries]
+        
         self.usage += len(queries)
         collected_results = []
         for query in queries:
@@ -69,9 +77,13 @@ class YouRM(dspy.Retrieve):
                 authoritative_results = []
                 for r in results["hits"]:
                     if self.is_valid_source(r["url"]) and r["url"] not in exclude_urls:
-                        authoritative_results.append(r)
+                        # Check if the title or description is in Arabic
+                        if self.is_arabic_text(r.get("title", "")) or self.is_arabic_text(r.get("description", "")):
+                            authoritative_results.append(r)
+
                 if "hits" in results:
                     collected_results.extend(authoritative_results[: self.k])
+
             except Exception as e:
                 logging.error(f"Error occurs when searching query {query}: {e}")
 
@@ -371,6 +383,11 @@ class SerperRM(dspy.Retrieve):
             self.serper_search_api_key = os.environ["SERPER_API_KEY"]
 
         self.base_url = "https://google.serper.dev"
+        # Set Arabic as the language for all queries.
+        if self.query_params is None:
+            self.query_params = {}
+        self.query_params["hl"] = "ar"  # Language set to Arabic
+        self.query_params["gl"] = "SA"  # Set the country to Saudi Arabia
 
     def serper_runner(self, query_params):
         self.search_url = f"{self.base_url}/search"
@@ -384,9 +401,9 @@ class SerperRM(dspy.Retrieve):
             "POST", self.search_url, headers=headers, json=query_params
         )
 
-        if response == None:
+        if response is None:
             raise RuntimeError(
-                f"Error had occured while running the search process.\n Error is {response.reason}, had failed with status code {response.status_code}"
+                f"Error occurred while running the search process.\n Error is {response.reason}, failed with status code {response.status_code}"
             )
 
         return response.json()
@@ -399,7 +416,6 @@ class SerperRM(dspy.Retrieve):
     def forward(self, query_or_queries: Union[str, List[str]], exclude_urls: List[str]):
         """
         Calls the API and searches for the query passed in.
-
 
         Args:
             query_or_queries (Union[str, List[str]]): The query or queries to search for.
@@ -422,7 +438,6 @@ class SerperRM(dspy.Retrieve):
                 continue
             query_params = self.query_params
 
-            # All available parameters can be found in the playground: https://serper.dev/playground
             # Sets the json value for query to be the query that is being parsed.
             query_params["q"] = query
 
@@ -444,7 +459,7 @@ class SerperRM(dspy.Retrieve):
                 for organic in organic_results:
                     snippets = []
                     snippets.append(organic.get("snippet"))
-                    if knowledge_graph != None:
+                    if knowledge_graph is not None:
                         collected_results.append(
                             {
                                 "snippets": snippets,

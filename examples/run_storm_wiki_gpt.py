@@ -93,6 +93,7 @@ def main(args):
     runner = STORMWikiRunner(engine_args, lm_configs, rm)
 
     topic = input('Topic: ')
+    topic = topic + " (يجب أن تكون المصادر عربية)"
     runner.run(
         topic=topic,
         do_research=args.do_research,
