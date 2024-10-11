@@ -20,7 +20,7 @@ def create_new_article_page():
                 # Text input for the search topic
                 DemoUIHelper.st_markdown_adjust_size(content="Enter the topic you want to learn in depth:",
                                                      font_size=18)
-                st.session_state["page3_topic"] = st.text_input(label='page3_topic', label_visibility="collapsed")
+                st.session_state["page3_topic"] = st.text_input(label='page3_topic', label_visibility="collapsed") + "(يجب أن تكون المصادر عربية)"
                 pass_appropriateness_check = True
 
                 # Submit button for the form
