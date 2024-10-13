@@ -78,7 +78,7 @@ def create_new_article_page():
             st.info('Now I will connect the information I found for your reference. (This may take 4-5 minutes.)')
             st.session_state["runner"].run(topic=st.session_state["page3_topic"], do_research=False,
                                            do_generate_outline=False,
-                                           do_generate_article=True, do_polish_article=True, remove_duplicate=False)
+                                           do_generate_article=True, do_polish_article=False, remove_duplicate=False)
             # finish the session
             st.session_state["runner"].post_run()
 
