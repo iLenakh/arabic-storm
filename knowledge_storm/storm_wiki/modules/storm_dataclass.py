@@ -104,25 +104,27 @@ class DialogueTurn:
 
 class StormInformationTable(InformationTable):
     """
-    The InformationTable class serves as data class to store the information
-    collected during KnowledgeCuration stage.
-
-    Create subclass to incorporate more information as needed. For example,
-    in STORM paper https://arxiv.org/pdf/2402.14207.pdf, additional information
-    would be perspective guided dialogue history.
+    The StormInformationTable class stores information gathered during the KnowledgeCuration stage.
+    This is a subclass of InformationTable with added functionality to handle conversations and information retrieval.
     """
 
-    def __init__(self, conversations=List[Tuple[str, List[DialogueTurn]]]):
+    def __init__(self, conversations: List[Tuple[str, List[DialogueTurn]]]):
         super().__init__()
         self.conversations = conversations
-        self.url_to_info: Dict[str, StormInformation] = (
-            StormInformationTable.construct_url_to_info(self.conversations)
-        )
+        self.url_to_info: Dict[str, StormInformation] = self.construct_url_to_info(self.conversations)
+        self.encoder = None
+        self.collected_urls = []
+        self.collected_snippets = []
+        self.encoded_snippets = None
 
     @staticmethod
     def construct_url_to_info(
         conversations: List[Tuple[str, List[DialogueTurn]]]
     ) -> Dict[str, StormInformation]:
+        """
+        Constructs a dictionary that maps URLs to StormInformation objects based on conversation data.
+        This prevents duplication by consolidating snippets from the same URL.
+        """
         url_to_info = {}
 
         for persona, conv in conversations:
@@ -132,14 +134,20 @@ class StormInformationTable(InformationTable):
                         url_to_info[storm_info.url].snippets.extend(storm_info.snippets)
                     else:
                         url_to_info[storm_info.url] = storm_info
+
+        # Remove duplicate snippets by converting to a set and back to a list
         for url in url_to_info:
             url_to_info[url].snippets = list(set(url_to_info[url].snippets))
+
         return url_to_info
 
     @staticmethod
     def construct_log_dict(
         conversations: List[Tuple[str, List[DialogueTurn]]]
     ) -> List[Dict[str, Union[str, Any]]]:
+        """
+        Constructs a log dictionary for each conversation, including persona and dialogue turns.
+        """
         conversation_log = []
         for persona, conv in conversations:
             conversation_log.append(
@@ -147,14 +155,20 @@ class StormInformationTable(InformationTable):
             )
         return conversation_log
 
-    def dump_url_to_info(self, path):
+    def dump_url_to_info(self, path: str):
+        """
+        Dumps the URL-to-information mapping into a JSON file.
+        """
         url_to_info = copy.deepcopy(self.url_to_info)
         for url in url_to_info:
             url_to_info[url] = url_to_info[url].to_dict()
         FileIOHelper.dump_json(url_to_info, path)
 
     @classmethod
-    def from_conversation_log_file(cls, path):
+    def from_conversation_log_file(cls, path: str):
+        """
+        Loads a StormInformationTable from a conversation log file.
+        """
         conversation_log_data = FileIOHelper.load_json(path)
         conversations = []
         for item in conversation_log_data:
@@ -164,45 +178,66 @@ class StormInformationTable(InformationTable):
         return cls(conversations)
 
     def prepare_table_for_retrieval(self):
-        self.encoder = SentenceTransformer("paraphrase-MiniLM-L6-v2")
+        """
+        Prepares the table by encoding all collected snippets using a sentence transformer model.
+        The snippets are encoded once to speed up the retrieval process.
+        """
+        if not self.encoder:
+            # Initialize the model once if not already initialized
+            self.encoder = SentenceTransformer("paraphrase-MiniLM-L6-v2")
+
         self.collected_urls = []
         self.collected_snippets = []
+
         for url, information in self.url_to_info.items():
             for snippet in information.snippets:
                 self.collected_urls.append(url)
                 self.collected_snippets.append(snippet)
-        self.encoded_snippets = self.encoder.encode(
-            self.collected_snippets, show_progress_bar=False
-        )
+
+        # Encode snippets and ensure it's a 2D array for further use
+        self.encoded_snippets = np.array(self.encoder.encode(self.collected_snippets, show_progress_bar=False))
 
     def retrieve_information(
-        self, queries: Union[List[str], str], search_top_k
+        self, queries: Union[List[str], str], search_top_k: int
     ) -> List[StormInformation]:
+        """
+        Retrieves relevant snippets based on the cosine similarity between the query and encoded snippets.
+        Returns a list of `StormInformation` objects.
+        """
+        if isinstance(queries, str):
+            queries = [queries]
+
         selected_urls = []
         selected_snippets = []
-        if type(queries) is str:
-            queries = [queries]
+
         for query in queries:
-            encoded_query = self.encoder.encode(query, show_progress_bar=False)
-            sim = cosine_similarity([encoded_query], self.encoded_snippets)[0]
-            sorted_indices = np.argsort(sim)
-            for i in sorted_indices[-search_top_k:][::-1]:
+            # Encode query and reshape to a 2D array for cosine similarity calculation
+            encoded_query = np.array(self.encoder.encode([query], show_progress_bar=False)).reshape(1, -1)
+
+            # Calculate cosine similarity
+            sim = cosine_similarity(encoded_query, self.encoded_snippets)[0]
+
+            # Retrieve the indices of top k similar snippets
+            sorted_indices = np.argsort(sim)[-search_top_k:][::-1]
+
+            for i in sorted_indices:
                 selected_urls.append(self.collected_urls[i])
                 selected_snippets.append(self.collected_snippets[i])
 
+        # Group snippets by their URLs
         url_to_snippets = {}
         for url, snippet in zip(selected_urls, selected_snippets):
             if url not in url_to_snippets:
                 url_to_snippets[url] = set()
             url_to_snippets[url].add(snippet)
 
+        # Copy the information and replace snippets with the selected ones
         selected_url_to_info = {}
         for url in url_to_snippets:
             selected_url_to_info[url] = copy.deepcopy(self.url_to_info[url])
             selected_url_to_info[url].snippets = list(url_to_snippets[url])
 
         return list(selected_url_to_info.values())
-
 
 class StormArticle(Article):
     def __init__(self, topic_name):
