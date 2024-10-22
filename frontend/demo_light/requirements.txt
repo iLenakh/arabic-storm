@@ -11,3 +11,4 @@ streamlit-option-menu
 dspy
 sentence-transformers
 langchain-core
+langchain-huggingface
