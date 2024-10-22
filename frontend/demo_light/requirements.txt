@@ -13,3 +13,4 @@ sentence-transformers
 langchain-core
 langchain-huggingface
 langchain_qdrant
+langchain-text-splitters
