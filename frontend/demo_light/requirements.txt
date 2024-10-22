@@ -10,3 +10,4 @@ streamlit-float
 streamlit-option-menu
 dspy
 sentence-transformers
+langchain-core
