@@ -1,4 +1,8 @@
 import os
+import sys
+# Add the parent directory to sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 wiki_root_dir = os.path.dirname(os.path.dirname(script_dir))
