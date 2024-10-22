@@ -14,3 +14,4 @@ langchain-core
 langchain-huggingface
 langchain_qdrant
 langchain-text-splitters
+trafilatura
