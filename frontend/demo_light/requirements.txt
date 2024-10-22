@@ -9,3 +9,4 @@ st-pages==0.4.5
 streamlit-float
 streamlit-option-menu
 dspy
+sentence-transformers
