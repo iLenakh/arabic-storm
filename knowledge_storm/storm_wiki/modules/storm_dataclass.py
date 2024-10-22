@@ -196,55 +196,48 @@ class StormInformationTable(InformationTable):
 
         # Encode snippets and ensure it's a 2D array for further use
         self.encoded_snippets = np.array(self.encoder.encode(self.collected_snippets, show_progress_bar=False))
-def retrieve_information(
-    self, queries: Union[List[str], str], search_top_k: int
-) -> List[StormInformation]:
-    """
-    Retrieves relevant snippets based on the cosine similarity between the query and encoded snippets.
-    Returns a list of StormInformation objects.
-    """
-    selected_urls = []
-    selected_snippets = []
 
-    # Ensure queries are in list format
-    if isinstance(queries, str):
-        queries = [queries]
+    def retrieve_information(
+        self, queries: Union[List[str], str], search_top_k: int
+    ) -> List[StormInformation]:
+        """
+        Retrieves relevant snippets based on the cosine similarity between the query and encoded snippets.
+        Returns a list of `StormInformation` objects.
+        """
+        if isinstance(queries, str):
+            queries = [queries]
 
-    for query in queries:
-        # Encode query and ensure it is reshaped to 2D array
-        encoded_query = self.encoder.encode([query], show_progress_bar=False)
+        selected_urls = []
+        selected_snippets = []
 
-        if len(self.encoded_snippets) == 0:
-            raise ValueError("Encoded snippets are empty. Ensure snippets are collected and encoded.")
+        for query in queries:
+            # Encode query and reshape to a 2D array for cosine similarity calculation
+            encoded_query = np.array(self.encoder.encode([query], show_progress_bar=False)).reshape(1, -1)
 
-        # Compute cosine similarity between query and all snippets
-        sim = cosine_similarity([encoded_query[0]], self.encoded_snippets)
+            # Calculate cosine similarity
+            sim = cosine_similarity(encoded_query, self.encoded_snippets)[0]
 
-        if sim.shape[1] != self.encoded_snippets.shape[0]:
-            raise ValueError(f"Mismatch in cosine similarity input dimensions: query shape {encoded_query.shape}, snippets shape {self.encoded_snippets.shape}")
+            # Retrieve the indices of top k similar snippets
+            sorted_indices = np.argsort(sim)[-search_top_k:][::-1]
 
-        # Get the indices of the top-k most similar snippets
-        sorted_indices = np.argsort(sim[0])[-search_top_k:][::-1]
+            for i in sorted_indices:
+                selected_urls.append(self.collected_urls[i])
+                selected_snippets.append(self.collected_snippets[i])
 
-        for i in sorted_indices:
-            selected_urls.append(self.collected_urls[i])
-            selected_snippets.append(self.collected_snippets[i])
+        # Group snippets by their URLs
+        url_to_snippets = {}
+        for url, snippet in zip(selected_urls, selected_snippets):
+            if url not in url_to_snippets:
+                url_to_snippets[url] = set()
+            url_to_snippets[url].add(snippet)
 
-    # Group snippets by URL
-    url_to_snippets = {}
-    for url, snippet in zip(selected_urls, selected_snippets):
-        if url not in url_to_snippets:
-            url_to_snippets[url] = set()
-        url_to_snippets[url].add(snippet)
+        # Copy the information and replace snippets with the selected ones
+        selected_url_to_info = {}
+        for url in url_to_snippets:
+            selected_url_to_info[url] = copy.deepcopy(self.url_to_info[url])
+            selected_url_to_info[url].snippets = list(url_to_snippets[url])
 
-    # Deep copy the selected information and update with retrieved snippets
-    selected_url_to_info = {}
-    for url in url_to_snippets:
-        selected_url_to_info[url] = copy.deepcopy(self.url_to_info[url])
-        selected_url_to_info[url].snippets = list(url_to_snippets[url])
-
-    return list(selected_url_to_info.values())
-
+        return list(selected_url_to_info.values())
 
 class StormArticle(Article):
     def __init__(self, topic_name):
