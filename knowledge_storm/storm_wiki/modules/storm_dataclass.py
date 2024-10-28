@@ -176,62 +176,32 @@ class StormInformationTable(InformationTable):
         )
 
     def retrieve_information(
-        self, queries: Union[List[str], str], search_top_k: int
+        self, queries: Union[List[str], str], search_top_k
     ) -> List[StormInformation]:
         selected_urls = []
         selected_snippets = []
-
-        # Check if encoded_snippets is empty
-        if self.encoded_snippets.size == 0:
-            print("Warning: Encoded snippets array is empty. Returning empty result.")
-            return []
-
-        if isinstance(queries, str):
+        if type(queries) is str:
             queries = [queries]
-        
         for query in queries:
-            # Encode the query
-            encoded_query = np.array(self.encoder.encode(query, show_progress_bar=False)).reshape(1, -1)
-
-            # Ensure encoded_snippets is reshaped correctly
-            self.encoded_snippets = np.array(self.encoded_snippets).reshape(-1, encoded_query.shape[1])
-
-            # Calculate cosine similarity between encoded_query and encoded_snippets
-            sim = cosine_similarity(encoded_query, self.encoded_snippets)[0]
+            encoded_query = self.encoder.encode(query, show_progress_bar=False)
+            sim = cosine_similarity([encoded_query], self.encoded_snippets)[0]
             sorted_indices = np.argsort(sim)
-
             for i in sorted_indices[-search_top_k:][::-1]:
                 selected_urls.append(self.collected_urls[i])
                 selected_snippets.append(self.collected_snippets[i])
 
-        # Create a dictionary to group selected snippets by URL
         url_to_snippets = {}
         for url, snippet in zip(selected_urls, selected_snippets):
             if url not in url_to_snippets:
-                url_to_snippets[url] = []
-            url_to_snippets[url].append(snippet)
+                url_to_snippets[url] = set()
+            url_to_snippets[url].add(snippet)
 
-        # Map URLs to StormInformation objects and add corresponding snippets
         selected_url_to_info = {}
         for url in url_to_snippets:
             selected_url_to_info[url] = copy.deepcopy(self.url_to_info[url])
-            selected_url_to_info[url].snippets = url_to_snippets[url]
+            selected_url_to_info[url].snippets = list(url_to_snippets[url])
 
-        # Format the output for references
-        formatted_output = []
-        for url, info in selected_url_to_info.items():
-            snippets_with_references = []
-            for snippet in info.snippets:
-                # Append each snippet along with its corresponding reference
-                snippets_with_references.append(snippet)
-                snippets_with_references.append(f"References for this snippet can be found at: {url}")  # Adjust based on your reference format
-
-            formatted_output.append({
-                'info': info,
-                'snippets_with_references': snippets_with_references,
-            })
-
-        return formatted_output
+        return list(selected_url_to_info.values())
 
 
 class StormArticle(Article):
