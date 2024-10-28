@@ -184,8 +184,7 @@ class StormInformationTable(InformationTable):
             queries = [queries]
         for query in queries:
             encoded_query = self.encoder.encode(query, show_progress_bar=False)
-            self.encoded_snippets = np.array(self.encoded_snippets).reshape(-1, encoded_query.shape[1])
-            sim = cosine_similarity(encoded_query, self.encoded_snippets)[0]
+            sim = cosine_similarity([encoded_query], self.encoded_snippets)[0]
             sorted_indices = np.argsort(sim)
             for i in sorted_indices[-search_top_k:][::-1]:
                 selected_urls.append(self.collected_urls[i])
