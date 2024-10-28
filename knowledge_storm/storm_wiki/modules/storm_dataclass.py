@@ -175,50 +175,33 @@ class StormInformationTable(InformationTable):
             self.collected_snippets, show_progress_bar=False
         )
 
+    def retrieve_information(
+        self, queries: Union[List[str], str], search_top_k
+    ) -> List[StormInformation]:
+        selected_urls = []
+        selected_snippets = []
+        if type(queries) is str:
+            queries = [queries]
+        for query in queries:
+            encoded_query = self.encoder.encode(query, show_progress_bar=False)
+            sim = cosine_similarity([encoded_query], self.encoded_snippets)[0]
+            sorted_indices = np.argsort(sim)
+            for i in sorted_indices[-search_top_k:][::-1]:
+                selected_urls.append(self.collected_urls[i])
+                selected_snippets.append(self.collected_snippets[i])
 
-def retrieve_information(
-    self, queries: Union[List[str], str], search_top_k: int
-) -> List[StormInformation]:
-    selected_urls = []
-    selected_snippets = []
+        url_to_snippets = {}
+        for url, snippet in zip(selected_urls, selected_snippets):
+            if url not in url_to_snippets:
+                url_to_snippets[url] = set()
+            url_to_snippets[url].add(snippet)
 
-    # Check if encoded_snippets is empty
-    if self.encoded_snippets.size == 0:
-        print("Warning: Encoded snippets array is empty. Returning empty result.")
-        return []
+        selected_url_to_info = {}
+        for url in url_to_snippets:
+            selected_url_to_info[url] = copy.deepcopy(self.url_to_info[url])
+            selected_url_to_info[url].snippets = list(url_to_snippets[url])
 
-    if isinstance(queries, str):
-        queries = [queries]
-    
-    for query in queries:
-        # Encode the query
-        encoded_query = np.array(self.encoder.encode(query, show_progress_bar=False)).reshape(1, -1)
-
-        # Ensure encoded_snippets is reshaped correctly
-        self.encoded_snippets = np.array(self.encoded_snippets).reshape(-1, encoded_query.shape[1])
-
-        # Calculate cosine similarity between encoded_query and encoded_snippets
-        sim = cosine_similarity(encoded_query, self.encoded_snippets)[0]
-        sorted_indices = np.argsort(sim)
-
-        for i in sorted_indices[-search_top_k:][::-1]:
-            selected_urls.append(self.collected_urls[i])
-            selected_snippets.append(self.collected_snippets[i])
-
-    # Group selected URLs and snippets
-    url_to_snippets = {}
-    for url, snippet in zip(selected_urls, selected_snippets):
-        if url not in url_to_snippets:
-            url_to_snippets[url] = set()
-        url_to_snippets[url].add(snippet)
-
-    # Map URLs to StormInformation objects with snippets
-    selected_url_to_info = {}
-    for url in url_to_snippets:
-        selected_url_to_info[url] = copy.deepcopy(self.url_to_info[url])
-        selected_url_to_info[url].snippets = list(url_to_snippets[url])
-
-    return list(selected_url_to_info.values())
+        return list(selected_url_to_info.values())
 
 
 class StormArticle(Article):
