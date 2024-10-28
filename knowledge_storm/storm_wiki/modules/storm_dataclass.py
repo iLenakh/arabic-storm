@@ -183,7 +183,8 @@ class StormInformationTable(InformationTable):
         if type(queries) is str:
             queries = [queries]
         for query in queries:
-            encoded_query = self.encoder.encode(query, show_progress_bar=False)
+            encoded_query = np.array(encoded_query).reshape(1, -1)  # Ensure encoded_query is 2D
+            self.encoded_snippets = np.array(self.encoded_snippets).reshape(-1, encoded_query.shape[1])  # Ensure encoded_snippets is 2D with same feature count
             sim = cosine_similarity([encoded_query], self.encoded_snippets)[0]
             sorted_indices = np.argsort(sim)
             for i in sorted_indices[-search_top_k:][::-1]:
