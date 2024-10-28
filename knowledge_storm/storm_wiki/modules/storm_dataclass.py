@@ -183,23 +183,9 @@ class StormInformationTable(InformationTable):
         if type(queries) is str:
             queries = [queries]
         for query in queries:
-            # Encode and reshape to ensure `encoded_query` is 2D
-            encoded_query = np.array(self.encoder.encode(query, show_progress_bar=False)).reshape(1, -1)
-            print("Encoded query shape:", encoded_query.shape)
-
-            # Make sure `encoded_snippets` has matching dimensions and is not empty
-            self.encoded_snippets = np.array(self.encoded_snippets).reshape(-1, encoded_query.shape[1])
-            print("Encoded snippets shape:", self.encoded_snippets.shape)
-
-            # Check for empty `encoded_snippets`
-            if self.encoded_snippets.shape[0] == 0:
-                raise ValueError("Encoded snippets array is empty; cannot compute cosine similarity.")
-
-            # Calculate cosine similarity
-            sim = cosine_similarity(encoded_query, self.encoded_snippets)[0]
+            encoded_query = self.encoder.encode(query, show_progress_bar=False)
+            sim = cosine_similarity([encoded_query], self.encoded_snippets)[0]
             sorted_indices = np.argsort(sim)
-
-            # Append results based on sorted similarity scores
             for i in sorted_indices[-search_top_k:][::-1]:
                 selected_urls.append(self.collected_urls[i])
                 selected_snippets.append(self.collected_snippets[i])
