@@ -176,26 +176,52 @@ class StormInformationTable(InformationTable):
         )
 
     def retrieve_information(
-        self, queries: Union[List[str], str], search_top_k
+        self, queries: Union[List[str], str], search_top_k: int
     ) -> List[StormInformation]:
         selected_urls = []
         selected_snippets = []
-        if type(queries) is str:
+
+        # Ensure queries is a list
+        if isinstance(queries, str):
             queries = [queries]
+
+        # Ensure encoded_snippets is not empty
+        if not hasattr(self, 'encoded_snippets') or self.encoded_snippets.size == 0:
+            print("Warning: Encoded snippets array is empty or not initialized.")
+            return []
+
         for query in queries:
+            # Encode the query
             encoded_query = self.encoder.encode(query, show_progress_bar=False)
-            sim = cosine_similarity([encoded_query], self.encoded_snippets)[0]
+
+            # Check if encoded_query is 2D, if not reshape it
+            if len(encoded_query.shape) == 1:
+                encoded_query = encoded_query.reshape(1, -1)
+
+            # Ensure encoded_snippets is reshaped correctly and has the expected dimensions
+            try:
+                self.encoded_snippets = np.array(self.encoded_snippets).reshape(-1, encoded_query.shape[1])
+            except ValueError as e:
+                print(f"Error reshaping encoded_snippets: {e}")
+                return []
+
+            # Calculate cosine similarity between encoded_query and encoded_snippets
+            sim = cosine_similarity(encoded_query, self.encoded_snippets)[0]
             sorted_indices = np.argsort(sim)
+
+            # Collect top-k results
             for i in sorted_indices[-search_top_k:][::-1]:
                 selected_urls.append(self.collected_urls[i])
                 selected_snippets.append(self.collected_snippets[i])
 
+        # Create a mapping of URLs to snippets
         url_to_snippets = {}
         for url, snippet in zip(selected_urls, selected_snippets):
             if url not in url_to_snippets:
                 url_to_snippets[url] = set()
             url_to_snippets[url].add(snippet)
 
+        # Map URLs to StormInformation objects and add corresponding snippets
         selected_url_to_info = {}
         for url in url_to_snippets:
             selected_url_to_info[url] = copy.deepcopy(self.url_to_info[url])
