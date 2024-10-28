@@ -175,65 +175,33 @@ class StormInformationTable(InformationTable):
             self.collected_snippets, show_progress_bar=False
         )
 
-
     def retrieve_information(
-        self, queries: Union[List[str], str], search_top_k: int
+        self, queries: Union[List[str], str], search_top_k
     ) -> List[StormInformation]:
         selected_urls = []
         selected_snippets = []
-
-        # Ensure queries is a list
-        if isinstance(queries, str):
+        if type(queries) is str:
             queries = [queries]
-
-        # Ensure self.encoded_snippets is not empty and has 2 dimensions
-        if not hasattr(self, 'encoded_snippets') or self.encoded_snippets.size == 0:
-            print("Warning: Encoded snippets array is empty or not initialized.")
-            return []
-
-        # Convert encoded_snippets to a 2D array if it's not already
-        self.encoded_snippets = np.array(self.encoded_snippets)
-        if self.encoded_snippets.ndim == 1:
-            print("Warning: Encoded snippets are 1D. Reshaping may not be feasible.")
-            return []
-
         for query in queries:
-            # Encode the query
             encoded_query = self.encoder.encode(query, show_progress_bar=False)
-            
-            # Ensure encoded_query is a 2D array
-            if len(encoded_query.shape) == 1:
-                encoded_query = encoded_query.reshape(1, -1)
-
-            # Check dimension compatibility between encoded_query and encoded_snippets
-            if encoded_query.shape[1] != self.encoded_snippets.shape[1]:
-                print(f"Error: Incompatible dimensions. Query encoding has {encoded_query.shape[1]} features, while encoded snippets have {self.encoded_snippets.shape[1]} features.")
-                return []
-
-            # Calculate cosine similarity between encoded_query and encoded_snippets
-            sim = cosine_similarity(encoded_query, self.encoded_snippets)[0]
+            sim = cosine_similarity([encoded_query], self.encoded_snippets)[0]
             sorted_indices = np.argsort(sim)
-
-            # Collect top-k results
             for i in sorted_indices[-search_top_k:][::-1]:
                 selected_urls.append(self.collected_urls[i])
                 selected_snippets.append(self.collected_snippets[i])
 
-        # Create a mapping of URLs to snippets
         url_to_snippets = {}
         for url, snippet in zip(selected_urls, selected_snippets):
             if url not in url_to_snippets:
                 url_to_snippets[url] = set()
             url_to_snippets[url].add(snippet)
 
-        # Map URLs to StormInformation objects and add corresponding snippets
         selected_url_to_info = {}
         for url in url_to_snippets:
             selected_url_to_info[url] = copy.deepcopy(self.url_to_info[url])
             selected_url_to_info[url].snippets = list(url_to_snippets[url])
 
         return list(selected_url_to_info.values())
-
 
 
 class StormArticle(Article):
