@@ -334,7 +334,7 @@ class DemoUIHelper():
                 "text-overflow": "ellipsis",
                 "font-size": "17px",
                 "color": "rgb(49, 51, 63)",
-                "text-align": "left",
+                "text-align": "right",
                 "width": "95%",
                 "font-weight": "normal"
             },
@@ -344,7 +344,7 @@ class DemoUIHelper():
                 "text-overflow": "ellipsis",
                 "font-size": "25px",
                 "color": "rgb(49, 51, 63)",
-                "text-align": "left",
+                "text-align": "right",
                 "width": "95%"
             },
             "filter": {
