@@ -64,7 +64,7 @@ def my_articles_page():
                     column_to_add = my_article_columns[my_article_count % 3]
                     my_article_count += 1
                     article_card_setup(column_to_add=column_to_add,
-                                       card_title=["My Article"],
+                                       card_title=[""],
                                        article_name=article_name)
         else:
             with my_article_columns[0]:
