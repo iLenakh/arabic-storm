@@ -6,6 +6,7 @@ import backoff
 import dspy
 import requests
 from dsp import backoff_hdlr, giveup_hdlr
+import re
 
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_qdrant import Qdrant
