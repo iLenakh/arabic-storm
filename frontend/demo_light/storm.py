@@ -49,7 +49,6 @@ def main():
             "font-size": "16px",
             "text-align": "center",
             "margin": "0px",
-            "color": "black",
             "padding": "10px",
         },
         "nav-link-selected": {
