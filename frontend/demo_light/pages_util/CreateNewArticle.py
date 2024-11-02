@@ -18,13 +18,14 @@ def create_new_article_page():
         with search_form_column:
             with st.form(key='search_form'):
                 # Text input for the search topic
-                DemoUIHelper.st_markdown_adjust_size(content="Enter the topic you want to learn in depth:",
-                                                     font_size=18)
+                DemoUIHelper.st_markdown_adjust_size(content="<div style='text-align: right;'>: يرجى إدخال الموضوع الذي ترغب في التعمق في تعلمه</div>",
+                                                    font_size=18)
+
                 st.session_state["page3_topic"] = st.text_input(label='page3_topic', label_visibility="collapsed") + "(يجب أن تكون المصادر عربية)"
                 pass_appropriateness_check = True
 
                 # Submit button for the form
-                submit_button = st.form_submit_button(label='Research')
+                submit_button = st.form_submit_button(label='بحث')
                 # only start new search when button is clicked, not started, or already finished previous one
                 if submit_button and st.session_state["page3_write_article_state"] in ["not started", "show results"]:
                     if not st.session_state["page3_topic"].strip():

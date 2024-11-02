@@ -38,7 +38,7 @@ def main():
     st.write('<style>div.block-container{padding-top:2rem;}</style>', unsafe_allow_html=True)
     menu_container = st.container()
     with menu_container:
-        pages = ["My Articles", "Create New Article"]
+        pages = ["مقالات سابقة", "إنشاء مقال جديد"]
         menu_selection = option_menu(None, pages,
                                      icons=['house', 'search'],
                                      menu_icon="cast", default_index=0, orientation="horizontal",
@@ -63,10 +63,10 @@ def main():
             st.session_state["manual_selection_override"] = False
             st.session_state["selected_page"] = None
 
-        if menu_selection == "My Articles":
+        if menu_selection == "مقالات سابقة":
             demo_util.clear_other_page_session_state(page_index=2)
             MyArticles.my_articles_page()
-        elif menu_selection == "Create New Article":
+        elif menu_selection == "إنشاء مقال جديد":
             demo_util.clear_other_page_session_state(page_index=3)
             CreateNewArticle.create_new_article_page()
 
