@@ -30,7 +30,7 @@ def my_articles_page():
                               text=cleaned_article_title,
                               image=DemoFileIOHelper.read_image_as_base64(
                                   os.path.join(demo_util.get_demo_dir(), "assets", "void.jpg")),
-                              styles=DemoUIHelper.get_article_card_UI_style(boarder_color="#9AD8E1"))
+                              styles=DemoUIHelper.get_article_card_UI_style(boarder_color="#22616BFF"))
             if hasClicked:
                 st.session_state["page2_selected_my_article"] = article_name
                 st.rerun()

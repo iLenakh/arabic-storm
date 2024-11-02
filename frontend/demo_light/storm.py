@@ -43,10 +43,22 @@ def main():
                                      icons=['house', 'search'],
                                      menu_icon="cast", default_index=0, orientation="horizontal",
                                      manual_select=st.session_state.selected_page,
-                                     styles={
-                                         "container": {"padding": "0.2rem 0", "background-color": "#22222200"},
-                                     },
-                                     key='menu_selection')
+    styles={
+        "container": {"padding": "0.2rem 0", "background-color": "#101FED00"},
+        "nav-link": {
+            "font-size": "16px",
+            "text-align": "center",
+            "margin": "0px",
+            "color": "black",
+            "padding": "10px",
+        },
+        "nav-link-selected": {
+            "background-color": "#15636FFF",  # Change to your preferred color
+            "color": "white"  # Optional: text color for the selected item
+        },
+    },
+    key='menu_selection'
+)
         if st.session_state.get("manual_selection_override", False):
             menu_selection = pages[st.session_state["selected_page"]]
             st.session_state["manual_selection_override"] = False
