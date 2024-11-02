@@ -11,7 +11,7 @@ def my_articles_page():
     with st.sidebar:
         _, return_button_col = st.columns([2, 5])
         with return_button_col:
-            if st.button("Select another article", disabled="page2_selected_my_article" not in st.session_state):
+            if st.button("اختيار مقال آخر",use_container_width=True, disabled="page2_selected_my_article" not in st.session_state):
                 if "page2_selected_my_article" in st.session_state:
                     del st.session_state["page2_selected_my_article"]
                 st.rerun()
@@ -45,16 +45,16 @@ def my_articles_page():
             pagination = st.container()
             bottom_menu = st.columns((1, 4, 1, 1, 1))[1:-1]
             with bottom_menu[2]:
-                batch_size = st.selectbox("Page Size", options=[24, 48, 72])
+                batch_size = st.selectbox("حجم الصفحة", options=[24, 48, 72])
             with bottom_menu[1]:
                 total_pages = (
                     int(len(article_names) / batch_size) if int(len(article_names) / batch_size) > 0 else 1
                 )
                 current_page = st.number_input(
-                    "Page", min_value=1, max_value=total_pages, step=1
+                    "صفحة", min_value=1, max_value=total_pages, step=1
                 )
             with bottom_menu[0]:
-                st.markdown(f"Page **{current_page}** of **{total_pages}** ")
+                st.markdown(f"صفحة **{current_page}** من **{total_pages}** ")
             # show article cards
             with pagination:
                 my_article_count = 0
