@@ -504,7 +504,7 @@ def set_storm_runner():
 
     # configure STORM runner
     llm_configs = STORMWikiLMConfigs()
-    llm_configs.init_openai_model(openai_api_key=st.secrets['OPENAI_API_KEY'], openai_type='openai')
+    llm_configs.init_openai_model(openai_api_key=st.secrets['OPENAI_API_KEY'], openai_type='openai', azure_api_key=None)
     llm_configs.set_question_asker_lm(OpenAIModel(model='gpt-4-1106-preview', api_key=st.secrets['OPENAI_API_KEY'],
                                                   api_provider='openai',
                                                   max_tokens=500, temperature=1.0, top_p=0.9))
@@ -527,9 +527,11 @@ def set_storm_runner():
 
 def display_article_page(selected_article_name, selected_article_file_path_dict,
                          show_title=True, show_main_article=True):
+    # Remove unwanted phrase from the title
+    cleaned_title = selected_article_name.replace('(يجب_أن_تكون_المصادر_عربية)', '').replace('_', ' ').strip()
+    
     if show_title:
-        st.markdown(f"<h2 style='text-align: center;'>{selected_article_name.replace('_', ' ')}</h2>",
-                    unsafe_allow_html=True)
+        st.markdown(f"<h2 style='text-align: center;'>{cleaned_title}</h2>", unsafe_allow_html=True)
 
     if show_main_article:
         _display_main_article(selected_article_file_path_dict)

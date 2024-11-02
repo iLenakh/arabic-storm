@@ -25,9 +25,9 @@ def my_articles_page():
     # if no feature demo selected, display all featured articles as info cards
     def article_card_setup(column_to_add, card_title, article_name):
         with column_to_add:
-            cleaned_article_title = article_name.replace("_", " ")
+            cleaned_article_title = article_name.replace('(يجب_أن_تكون_المصادر_عربية)', '').replace('_', ' ').strip()
             hasClicked = card(title=" / ".join(card_title),
-                              text=article_name.replace("_", " "),
+                              text=cleaned_article_title,
                               image=DemoFileIOHelper.read_image_as_base64(
                                   os.path.join(demo_util.get_demo_dir(), "assets", "void.jpg")),
                               styles=DemoUIHelper.get_article_card_UI_style(boarder_color="#9AD8E1"))
