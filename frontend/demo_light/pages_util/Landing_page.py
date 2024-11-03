@@ -43,6 +43,7 @@ def handle_google_callback():
 
     # Log the state for debugging
     st.write("Received state:", state)
+    st.session_state["oauth_state"] = state
     st.write("Stored oauth_state:", st.session_state.get("oauth_state"))
 
     if not code or not state:
