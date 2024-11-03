@@ -34,15 +34,19 @@ def google_login():
 def handle_google_callback():
     # Get query params and ensure 'code' and 'state' are available
     query_params = st.experimental_get_query_params()
-    code = query_params.get("code")
-    state = query_params.get("state")
+    
+    # Log query parameters for debugging
+    st.write("Query Parameters:", query_params)
+
+    code = query_params.get("code", [None])[0]  # Get code, default to None
+    state = query_params.get("state", [None])[0]  # Get state, default to None
 
     if not code or not state:
         st.error("Authorization failed or missing parameters.")
         return
     
     # Check if 'oauth_state' matches
-    if "oauth_state" not in st.session_state or st.session_state["oauth_state"] != state[0]:
+    if "oauth_state" not in st.session_state or st.session_state["oauth_state"] != state:
         st.error("Invalid state parameter. Please log in again.")
         return
 
@@ -56,7 +60,7 @@ def handle_google_callback():
         # Try to fetch the token using the authorization code
         token = oauth.fetch_token(
             "https://accounts.google.com/o/oauth2/token",
-            code=code[0],
+            code=code,
             client_secret=GOOGLE_CLIENT_SECRET
         )
         
