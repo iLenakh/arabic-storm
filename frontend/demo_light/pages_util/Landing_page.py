@@ -42,9 +42,9 @@ def handle_google_callback():
     state = query_params.get("state", [None])[0]  # Get state or None
 
     # Log the state for debugging
-    st.write("Received state:", state)
+    # st.write("Received state:", state)
     st.session_state["oauth_state"] = state
-    st.write("Stored oauth_state:", st.session_state.get("oauth_state"))
+    # st.write("Stored oauth_state:", st.session_state.get("oauth_state"))
 
     if not code or not state:
         st.error("Authorization failed or missing parameters.")
