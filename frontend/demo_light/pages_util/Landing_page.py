@@ -25,8 +25,8 @@ def google_login():
 
 # Function to handle Google OAuth response
 def handle_google_callback():
-    # Retrieve authorization code from query parameters 
-    code = st.query_params("code")
+    # Retrieve authorization code from query parameters
+    code = st.query_params["code"] if "code" in st.query_params else None
     if not code:
         st.error("Authorization code not found. Please log in again.")
         return
