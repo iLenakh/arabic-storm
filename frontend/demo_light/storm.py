@@ -24,7 +24,7 @@ def main_app():
             if type(value) == str:
                 os.environ[key] = value
 
-    # Initialize session_state variables
+    # Initialize session state variables
     if "selected_article_index" not in st.session_state:
         st.session_state["selected_article_index"] = 0
     if "selected_page" not in st.session_state:
@@ -53,13 +53,12 @@ def main_app():
                     "padding": "10px",
                 },
                 "nav-link-selected": {
-                    "background-color": "#15636FFF",  # Change to your preferred color
-                    "color": "white"  # Optional: text color for the selected item
+                    "background-color": "#15636FFF",
+                    "color": "white"
                 },
             },
             key='menu_selection'
         )
-
         if st.session_state.get("manual_selection_override", False):
             menu_selection = pages[st.session_state["selected_page"]]
             st.session_state["manual_selection_override"] = False
@@ -77,7 +76,8 @@ def main_app():
 def main():
     # If the user is not logged in, redirect to landing page with Google login
     if "logged_in" not in st.session_state or not st.session_state["logged_in"]:
-        if "code" in st.experimental_get_query_params():
+        query_params = st.experimental_get_query_params()
+        if "code" in query_params:
             Landing_page.handle_google_callback()
         else:
             Landing_page.show_landing_page()
