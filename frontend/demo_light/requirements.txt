@@ -25,3 +25,4 @@ langchain-huggingface
 langchain_qdrant
 langchain-text-splitters
 trafilatura
+authlib

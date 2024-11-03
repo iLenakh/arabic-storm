@@ -1,32 +1,30 @@
 import os
 import sys
+import streamlit as st
+from streamlit_option_menu import option_menu
+
 # Add the parent directory to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-
-script_dir = os.path.dirname(os.path.abspath(__file__))
-wiki_root_dir = os.path.dirname(os.path.dirname(script_dir))
-
 import demo_util
-from pages_util import MyArticles, CreateNewArticle
-from streamlit_float import *
-from streamlit_option_menu import option_menu
+from pages_util import MyArticles, CreateNewArticle, Landing_page
 
-
-def main():
+# Main application function
+def main_app():
     global database
     st.set_page_config(layout='wide')
 
+    # First-time setup
     if "first_run" not in st.session_state:
         st.session_state['first_run'] = True
 
-    # set api keys from secrets
+    # Set API keys from secrets
     if st.session_state['first_run']:
         for key, value in st.secrets.items():
             if type(value) == str:
                 os.environ[key] = value
 
-    # initialize session_state
+    # Initialize session_state variables
     if "selected_article_index" not in st.session_state:
         st.session_state["selected_article_index"] = 0
     if "selected_page" not in st.session_state:
@@ -36,33 +34,38 @@ def main():
         st.rerun()
 
     st.write('<style>div.block-container{padding-top:2rem;}</style>', unsafe_allow_html=True)
+    
+    # Navigation menu
     menu_container = st.container()
     with menu_container:
         pages = ["مقالات سابقة", "إنشاء مقال جديد"]
-        menu_selection = option_menu(None, pages,
-                                     icons=['house', 'search'],
-                                     menu_icon="cast", default_index=0, orientation="horizontal",
-                                     manual_select=st.session_state.selected_page,
-    styles={
-        "container": {"padding": "0.2rem 0", "background-color": "#101FED00"},
-        "nav-link": {
-            "font-size": "16px",
-            "text-align": "center",
-            "margin": "0px",
-            "padding": "10px",
-        },
-        "nav-link-selected": {
-            "background-color": "#15636FFF",  # Change to your preferred color
-            "color": "white"  # Optional: text color for the selected item
-        },
-    },
-    key='menu_selection'
-)
+        menu_selection = option_menu(
+            None, pages,
+            icons=['house', 'search'],
+            menu_icon="cast", default_index=0, orientation="horizontal",
+            manual_select=st.session_state.selected_page,
+            styles={
+                "container": {"padding": "0.2rem 0", "background-color": "#101FED00"},
+                "nav-link": {
+                    "font-size": "16px",
+                    "text-align": "center",
+                    "margin": "0px",
+                    "padding": "10px",
+                },
+                "nav-link-selected": {
+                    "background-color": "#15636FFF",  # Change to your preferred color
+                    "color": "white"  # Optional: text color for the selected item
+                },
+            },
+            key='menu_selection'
+        )
+
         if st.session_state.get("manual_selection_override", False):
             menu_selection = pages[st.session_state["selected_page"]]
             st.session_state["manual_selection_override"] = False
             st.session_state["selected_page"] = None
 
+        # Page routing based on selection
         if menu_selection == "مقالات سابقة":
             demo_util.clear_other_page_session_state(page_index=2)
             MyArticles.my_articles_page()
@@ -70,6 +73,15 @@ def main():
             demo_util.clear_other_page_session_state(page_index=3)
             CreateNewArticle.create_new_article_page()
 
+# Main entry point
+def main():
+    if "logged_in" not in st.session_state:
+        st.session_state["logged_in"] = False
+
+    if st.session_state["logged_in"]:
+        main_app()
+    else:
+        Landing_page.show_landing_page()
 
 if __name__ == "__main__":
     main()
