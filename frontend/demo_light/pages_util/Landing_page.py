@@ -1,7 +1,6 @@
 import os
 import streamlit as st
 from authlib.integrations.requests_client import OAuth2Session
-from urllib.parse import urlencode
 
 # Google OAuth 2.0 Configuration
 GOOGLE_CLIENT_ID = st.secrets["GOOGLE_CLIENT_ID"]
@@ -11,8 +10,8 @@ REDIRECT_URI = "https://arabic-storm.streamlit.app"
 # Function to handle Google login
 def google_login():
     oauth = OAuth2Session(
-        GOOGLE_CLIENT_ID,
-        GOOGLE_CLIENT_SECRET,
+        client_id=GOOGLE_CLIENT_ID,
+        client_secret=GOOGLE_CLIENT_SECRET,
         redirect_uri=REDIRECT_URI,
         scope="openid email profile"
     )
@@ -26,32 +25,37 @@ def google_login():
 
 # Function to handle Google OAuth response
 def handle_google_callback():
+    # Retrieve authorization code from query parameters
     code = st.query_params.get("code")
     if not code:
-        st.write("Authorization code not found.")
+        st.error("Authorization code not found. Please log in again.")
         return
 
     # Initialize OAuth session
     oauth = OAuth2Session(
-        GOOGLE_CLIENT_ID,
-        GOOGLE_CLIENT_SECRET,
+        client_id=GOOGLE_CLIENT_ID,
+        client_secret=GOOGLE_CLIENT_SECRET,
         redirect_uri=REDIRECT_URI,
     )
 
-    # Exchange code for token
-    token = oauth.fetch_token(
-        "https://oauth2.googleapis.com/token",
-        code=code,
-        client_id=GOOGLE_CLIENT_ID,
-        client_secret=GOOGLE_CLIENT_SECRET,
-    )
+    try:
+        # Exchange code for token
+        token = oauth.fetch_token(
+            "https://oauth2.googleapis.com/token",
+            code=code,
+            client_id=GOOGLE_CLIENT_ID,
+            client_secret=GOOGLE_CLIENT_SECRET,
+        )
 
-    # Use the token to fetch user information
-    user_info = oauth.get("https://www.googleapis.com/oauth2/v1/userinfo").json()
-    st.session_state["logged_in"] = True
-    st.session_state["user_info"] = user_info
-    st.experimental_rerun()
+        # Use the token to fetch user information
+        user_info = oauth.get("https://www.googleapis.com/oauth2/v1/userinfo").json()
+        st.session_state["logged_in"] = True
+        st.session_state["user_info"] = user_info
+        st.experimental_rerun()
 
+    except Exception as e:
+        st.error("An error occurred during the login process. Please try again.")
+        st.write(f"Error details: {e}")
 
 # Landing page function
 def landing_page():
@@ -62,4 +66,6 @@ def landing_page():
     if "logged_in" not in st.session_state or not st.session_state["logged_in"]:
         google_login()
     else:
-        st.write(f"Welcome, {st.session_state['user_info']['name']}!")
+        user_info = st.session_state.get("user_info", {})
+        st.write(f"Welcome, {user_info.get('name', 'User')}!")
+        st.write("You are successfully logged in.")
