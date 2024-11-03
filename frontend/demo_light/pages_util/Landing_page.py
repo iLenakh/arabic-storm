@@ -21,27 +21,37 @@ def google_login():
         scope="openid email profile"
     )
     
-    # Generate the authorization URL and state
+    # Generate authorization URL and state
     authorization_url, state = oauth.create_authorization_url(
         "https://accounts.google.com/o/oauth2/auth"
     )
     
-    # Store the state to verify later
+    # Store the state in session_state
     st.session_state["oauth_state"] = state
-    
-    # Redirect user to Google for authentication
     st.write(f"[Click here to log in with Google]({authorization_url})")
 
 # Function to handle Google OAuth response
 def handle_google_callback():
-    # Retrieve query parameters
+    # Get query parameters
     query_params = st.experimental_get_query_params()
     
-    code = query_params.get("code", [None])[0]  # The authorization code returned
-    state = query_params.get("state", [None])[0]  # The state parameter returned
+    # Log query parameters for debugging
+    st.write("Query Parameters:", query_params)
 
-    # Validate the state parameter
-    if state != st.session_state.get("oauth_state"):
+    code = query_params.get("code", [None])[0]  # Get code or None
+    state = query_params.get("state", [None])[0]  # Get state or None
+
+    # Log the state for debugging
+    st.write("Received state:", state)
+    st.write("Stored oauth_state:", st.session_state.get("oauth_state"))
+
+    if not code or not state:
+        st.error("Authorization failed or missing parameters.")
+        return
+    
+    # Check if 'oauth_state' matches
+    stored_state = st.session_state.get("oauth_state")
+    if stored_state is None or stored_state != state:
         st.error("Invalid state parameter. Please log in again.")
         return
 
@@ -51,8 +61,9 @@ def handle_google_callback():
         GOOGLE_CLIENT_SECRET,
         redirect_uri=REDIRECT_URI,
     )
+    
     try:
-        # Try to fetch the token using the authorization code
+        # Fetch the token using the authorization code
         token = oauth.fetch_token(
             "https://accounts.google.com/o/oauth2/token",
             code=code,
