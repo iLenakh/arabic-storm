@@ -6,7 +6,7 @@ from urllib.parse import urlencode
 # Google OAuth 2.0 Configuration
 GOOGLE_CLIENT_ID = st.secrets["GOOGLE_CLIENT_ID"]
 GOOGLE_CLIENT_SECRET = st.secrets["GOOGLE_CLIENT_SECRET"]
-REDIRECT_URI = "https://arabic-storm.streamlit.app/"
+REDIRECT_URI = "https://arabic-storm.streamlit.app"
 
 # Function to handle Google login
 def google_login():
