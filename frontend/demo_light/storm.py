@@ -15,12 +15,13 @@ def main_app():
     global database
     st.set_page_config(layout='wide')
 
-        # Display user info if logged in
+    # Display user info if logged in
     if "user_info" in st.session_state:
         user_info = st.session_state["user_info"]
         user_name = user_info.get("name", "User")
         user_email = user_info.get("email", "No email available")
-        
+
+        st.sidebar.write(f"**Below text is Temporary (for development purpose)** {user_name}")
         st.sidebar.write(f"**Logged in as:** {user_name}")
         st.sidebar.write(f"**Email:** {user_email}")
     else:
