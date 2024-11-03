@@ -7,7 +7,7 @@ from streamlit_option_menu import option_menu
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 import demo_util
-from pages_util import MyArticles, CreateNewArticle, Landing_page, handle_google_callback
+from pages_util import MyArticles, CreateNewArticle, Landing_page
 
 # Main application function
 def main_app():
@@ -78,7 +78,7 @@ def main():
     # If the user is not logged in, redirect to landing page with Google login
     if "logged_in" not in st.session_state or not st.session_state["logged_in"]:
         if "code" in st.experimental_get_query_params():
-            handle_google_callback()
+            Landing_page.handle_google_callback()
         else:
             Landing_page.show_landing_page()
     else:
