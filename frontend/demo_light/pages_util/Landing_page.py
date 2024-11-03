@@ -11,9 +11,8 @@ REDIRECT_URI = "https://arabic-storm.streamlit.app/?embedded=true"
 def show_landing_page():
     st.title("Welcome to the Application")
     st.write("Please log in to continue.")
+    google_login()
 
-    if st.button("Log In with Google"):
-        google_login()
 def google_login():
     oauth = OAuth2Session(
         GOOGLE_CLIENT_ID,
@@ -21,35 +20,28 @@ def google_login():
         redirect_uri=REDIRECT_URI,
         scope="openid email profile"
     )
+    
+    # Generate the authorization URL and state
     authorization_url, state = oauth.create_authorization_url(
         "https://accounts.google.com/o/oauth2/auth"
     )
     
-    # Store the state securely in session_state for each login attempt
+    # Store the state to verify later
     st.session_state["oauth_state"] = state
+    
+    # Redirect user to Google for authentication
     st.write(f"[Click here to log in with Google]({authorization_url})")
 
 # Function to handle Google OAuth response
 def handle_google_callback():
-    # Get query params and ensure 'code' and 'state' are available
+    # Retrieve query parameters
     query_params = st.experimental_get_query_params()
     
-    # Log query parameters for debugging
-    st.write("Query Parameters:", query_params)
+    code = query_params.get("code", [None])[0]  # The authorization code returned
+    state = query_params.get("state", [None])[0]  # The state parameter returned
 
-    code = query_params.get("code", [None])[0]  # Get code, default to None
-    state = query_params.get("state", [None])[0]  # Get state, default to None
-
-    # Log the state for debugging
-    st.write("Received state:", state)
-    st.write("Stored oauth_state:", st.session_state.get("oauth_state"))
-
-    if not code or not state:
-        st.error("Authorization failed or missing parameters.")
-        return
-    
-    # Check if 'oauth_state' matches
-    if "oauth_state" not in st.session_state or st.session_state["oauth_state"] != state:
+    # Validate the state parameter
+    if state != st.session_state.get("oauth_state"):
         st.error("Invalid state parameter. Please log in again.")
         return
 
