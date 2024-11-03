@@ -14,7 +14,6 @@ def show_landing_page():
 
     if st.button("Log In with Google"):
         google_login()
-
 def google_login():
     oauth = OAuth2Session(
         GOOGLE_CLIENT_ID,
@@ -40,6 +39,10 @@ def handle_google_callback():
 
     code = query_params.get("code", [None])[0]  # Get code, default to None
     state = query_params.get("state", [None])[0]  # Get state, default to None
+
+    # Log the state for debugging
+    st.write("Received state:", state)
+    st.write("Stored oauth_state:", st.session_state.get("oauth_state"))
 
     if not code or not state:
         st.error("Authorization failed or missing parameters.")
