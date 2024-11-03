@@ -42,16 +42,15 @@ def handle_google_callback():
     state = query_params.get("state", [None])[0]  # Get state or None
 
     # Log the state for debugging
-    # st.write("Received state:", state)
-    st.session_state["oauth_state"] = state
-    # st.write("Stored oauth_state:", st.session_state.get("oauth_state"))
+    st.write("Received state:", state)
+    stored_state = st.session_state.get("oauth_state")
+    st.write("Stored oauth_state:", stored_state)
 
     if not code or not state:
         st.error("Authorization failed or missing parameters.")
         return
     
     # Check if 'oauth_state' matches
-    stored_state = st.session_state.get("oauth_state")
     if stored_state is None or stored_state != state:
         st.error("Invalid state parameter. Please log in again.")
         return
@@ -64,13 +63,18 @@ def handle_google_callback():
     )
     
     try:
+        # Construct the full authorization response URL
+        request_url = f"{REDIRECT_URI}?code={code}&state={state}"
+        
         # Fetch the token using the authorization code
         token = oauth.fetch_token(
-            "https://accounts.google.com/o/oauth2/token",
+            "https://oauth2.googleapis.com/token",
             code=code,
-            client_secret=GOOGLE_CLIENT_SECRET
+            client_secret=GOOGLE_CLIENT_SECRET,
+            include_client_id=True,  # Ensure client ID is included if required
+            authorization_response=request_url  # The full URL including query params
         )
-        
+
         # Fetch user info
         user_info = oauth.get("https://www.googleapis.com/oauth2/v1/userinfo").json()
         st.session_state["logged_in"] = True
@@ -84,3 +88,19 @@ def handle_google_callback():
         st.error(f"Authentication failed: {e}")
         st.session_state.pop("oauth_state", None)  # Clear oauth_state on error
         st.experimental_rerun()
+
+# Main logic to determine the flow of the application
+def main():
+    # If the user is not logged in, redirect to landing page with Google login
+    if "logged_in" not in st.session_state or not st.session_state["logged_in"]:
+        query_params = st.experimental_get_query_params()
+        if "code" in query_params:
+            handle_google_callback()
+        else:
+            show_landing_page()
+    else:
+        # Here you can call your main app function
+        st.write("Welcome to your main application!")
+
+if __name__ == "__main__":
+    main()
