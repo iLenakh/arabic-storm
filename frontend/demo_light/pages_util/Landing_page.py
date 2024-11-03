@@ -5,7 +5,7 @@ from authlib.integrations.requests_client import OAuth2Session
 # Google OAuth 2.0 Configuration
 GOOGLE_CLIENT_ID = st.secrets["GOOGLE_CLIENT_ID"]
 GOOGLE_CLIENT_SECRET = st.secrets["GOOGLE_CLIENT_SECRET"]
-REDIRECT_URI = "https://arabic-storm.streamlit.app/?embedded=true" 
+REDIRECT_URI = "https://arabic-storm.streamlit.app/?embedded=true"
 
 # Function to initiate Google login
 def show_landing_page():
@@ -14,20 +14,23 @@ def show_landing_page():
     google_login()
 
 def google_login():
+    # Initialize OAuth2 session
     oauth = OAuth2Session(
         GOOGLE_CLIENT_ID,
         GOOGLE_CLIENT_SECRET,
         redirect_uri=REDIRECT_URI,
         scope="openid email profile"
     )
-    
+
     # Generate authorization URL and state
     authorization_url, state = oauth.create_authorization_url(
         "https://accounts.google.com/o/oauth2/auth"
     )
-    
+
     # Store the state in session_state
     st.session_state["oauth_state"] = state
+    stored_state = st.session_state.get("oauth_state")
+    st.write("Stored oauth_state:", stored_state)
     st.write(f"[Click here to log in with Google]({authorization_url})")
 
 # Function to handle Google OAuth response
@@ -49,7 +52,7 @@ def handle_google_callback():
     if not code or not state:
         st.error("Authorization failed or missing parameters.")
         return
-    
+
     # Check if 'oauth_state' matches
     if stored_state is None or stored_state != state:
         st.error("Invalid state parameter. Please log in again.")
@@ -65,14 +68,14 @@ def handle_google_callback():
     try:
         # Construct the full authorization response URL
         request_url = f"{REDIRECT_URI}?code={code}&state={state}"
-        
+
         # Fetch the token using the authorization code
         token = oauth.fetch_token(
             "https://oauth2.googleapis.com/token",
             code=code,
             client_secret=GOOGLE_CLIENT_SECRET,
-            include_client_id=True,  # Ensure client ID is included if required
-            authorization_response=request_url  # The full URL including query params
+            include_client_id=True,
+            authorization_response=request_url
         )
 
         # Fetch user info
@@ -99,7 +102,7 @@ def main():
         else:
             show_landing_page()
     else:
-        # Here you can call your main app function
+        # Main application logic here
         st.write("Welcome to your main application!")
 
 if __name__ == "__main__":
