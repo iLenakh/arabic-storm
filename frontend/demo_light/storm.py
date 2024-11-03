@@ -74,15 +74,10 @@ def main_app():
 
 # Main entry point
 def main():
-    # If the user is not logged in, redirect to landing page with Google login
-    if "logged_in" not in st.session_state or not st.session_state["logged_in"]:
-        query_params = st.experimental_get_query_params()
-        if "code" in query_params:
-            Landing_page.handle_google_callback()
-        else:
-            Landing_page.show_landing_page()
-    else:
-        main_app()
+    if "logged_in" not in st.session_state:
+        st.session_state["logged_in"] = False
 
-if __name__ == "__main__":
-    main()
+    if st.session_state["logged_in"]:
+        main_app()
+    else:
+        Landing_page.show_landing_page()
