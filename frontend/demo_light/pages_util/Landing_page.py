@@ -26,16 +26,32 @@ def google_login():
 
 # Function to handle Google OAuth response
 def handle_google_callback():
+    code = st.query_params.get("code")
+    if not code:
+        st.write("Authorization code not found.")
+        return
+
+    # Initialize OAuth session
     oauth = OAuth2Session(
         GOOGLE_CLIENT_ID,
         GOOGLE_CLIENT_SECRET,
         redirect_uri=REDIRECT_URI,
     )
 
+    # Exchange code for token
+    token = oauth.fetch_token(
+        "https://oauth2.googleapis.com/token",
+        code=code,
+        client_id=GOOGLE_CLIENT_ID,
+        client_secret=GOOGLE_CLIENT_SECRET,
+    )
+
+    # Use the token to fetch user information
     user_info = oauth.get("https://www.googleapis.com/oauth2/v1/userinfo").json()
     st.session_state["logged_in"] = True
     st.session_state["user_info"] = user_info
     st.experimental_rerun()
+
 
 # Landing page function
 def landing_page():
