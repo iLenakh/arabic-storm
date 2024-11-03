@@ -31,11 +31,7 @@ def handle_google_callback():
         GOOGLE_CLIENT_SECRET,
         redirect_uri=REDIRECT_URI,
     )
-    token = oauth.fetch_token(
-        "https://accounts.google.com/o/oauth2/token",
-        authorization_response=st.experimental_get_query_params(),
-        state=st.session_state["oauth_state"]
-    )
+
     user_info = oauth.get("https://www.googleapis.com/oauth2/v1/userinfo").json()
     st.session_state["logged_in"] = True
     st.session_state["user_info"] = user_info
