@@ -8,6 +8,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')
 
 import demo_util
 from pages_util import MyArticles, CreateNewArticle, Landing_page
+import pages_util.Landing_page as Landing_page  
 
 # Main application function
 def main_app():
@@ -74,9 +75,7 @@ def main_app():
 
 # Main entry point
 def main():
-    import pages_util.Landing_page as Landing_page  # Import at this level for clarity
-
-    # Check login status
+    # If the user is not logged in, redirect to landing page with Google login
     if "logged_in" not in st.session_state or not st.session_state["logged_in"]:
         query_params = st.experimental_get_query_params()
         if "code" in query_params:
@@ -84,7 +83,8 @@ def main():
         else:
             Landing_page.show_landing_page()
     else:
-        main_app()
+        # Main application logic here
+        st.write("Welcome to your main application!")
 
 if __name__ == "__main__":
     main()

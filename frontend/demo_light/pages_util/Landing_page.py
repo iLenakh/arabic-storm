@@ -29,8 +29,7 @@ def google_login():
 
     # Store the state in session_state
     st.session_state["oauth_state"] = state
-    stored_state = st.session_state.get("oauth_state")
-    st.write("Stored oauth_state:", stored_state)
+    st.write("Stored oauth_state:", st.session_state["oauth_state"])
     st.write(f"[Click here to log in with Google]({authorization_url})")
 
 # Function to handle Google OAuth response
@@ -91,19 +90,3 @@ def handle_google_callback():
         st.error(f"Authentication failed: {e}")
         st.session_state.pop("oauth_state", None)  # Clear oauth_state on error
         st.experimental_rerun()
-
-# Main logic to determine the flow of the application
-def main():
-    # If the user is not logged in, redirect to landing page with Google login
-    if "logged_in" not in st.session_state or not st.session_state["logged_in"]:
-        query_params = st.experimental_get_query_params()
-        if "code" in query_params:
-            handle_google_callback()
-        else:
-            show_landing_page()
-    else:
-        # Main application logic here
-        st.write("Welcome to your main application!")
-
-if __name__ == "__main__":
-    main()
