@@ -1,11 +1,15 @@
 import os
 import streamlit as st
 from authlib.integrations.requests_client import OAuth2Session
+from streamlit_cookies_manager import Cookies, cookie_manager
 
 # Google OAuth 2.0 Configuration
 GOOGLE_CLIENT_ID = st.secrets["GOOGLE_CLIENT_ID"]
 GOOGLE_CLIENT_SECRET = st.secrets["GOOGLE_CLIENT_SECRET"]
 REDIRECT_URI = "https://arabic-storm.streamlit.app"
+
+# Initialize cookies
+cookies = Cookies()
 
 # Function to handle Google login
 def google_login():
@@ -18,9 +22,9 @@ def google_login():
     authorization_url, state = oauth.create_authorization_url(
         "https://accounts.google.com/o/oauth2/auth"
     )
-    # Save the state in session_state for security
-    st.session_state["oauth_state"] = state
-    # Redirect to Google login
+    # Save the state in cookies for security
+    cookies["oauth_state"] = state
+    cookie_manager.save()
     st.write(f"[Click here to log in with Google]({authorization_url})")
 
 # Function to handle Google OAuth response
@@ -33,7 +37,8 @@ def handle_google_callback():
     code = st.query_params.get("code")
     state = st.query_params.get("state")
 
-    if not code or state != st.session_state.get("oauth_state"):
+    # Check that state matches
+    if not code or state != cookies.get("oauth_state"):
         st.error("Authorization failed. Please log in again.")
         return
 

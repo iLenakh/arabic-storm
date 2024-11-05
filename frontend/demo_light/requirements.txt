@@ -26,3 +26,4 @@ langchain_qdrant
 langchain-text-splitters
 trafilatura
 authlib
+streamlit-cookies-manager
