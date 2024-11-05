@@ -25,10 +25,16 @@ def google_login():
 
 # Function to handle Google OAuth response
 def handle_google_callback():
-    # Retrieve authorization code from query parameters
+    # Check if already logged in to avoid re-executing on refresh
+    if "logged_in" in st.session_state and st.session_state["logged_in"]:
+        return
+
+    # Retrieve authorization code and state from query parameters
     code = st.query_params.get("code")
-    if not code:
-        st.error("Authorization code not found. Please log in again.")
+    state = st.query_params.get("state")
+
+    if not code or state != st.session_state.get("oauth_state"):
+        st.error("Authorization failed. Please log in again.")
         return
 
     # Initialize OAuth session
