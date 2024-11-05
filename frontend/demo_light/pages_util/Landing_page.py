@@ -23,10 +23,16 @@ def google_login():
         "https://accounts.google.com/o/oauth2/auth"
     )
 
-    # Save the state in cookies for security
-    cookies["oauth_state"] = state
-    cookies.save()
+    # Ensure cookies are ready before setting the state
+    if cookies.ready():
+        # Save the state in cookies for security
+        cookies["oauth_state"] = state
+        cookies.save()
+    else:
+        st.warning("Cookies are not ready yet. Please reload the page.")
+
     st.write(f"[Click here to log in with Google]({authorization_url})")
+
 
 # Function to handle Google OAuth response
 def handle_google_callback():
