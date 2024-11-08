@@ -4,55 +4,8 @@ import demo_util
 import streamlit as st
 from demo_util import DemoFileIOHelper, DemoTextProcessingHelper, DemoUIHelper, truncate_filename
 
-# Set page style and layout adjustments
+# Set page configuration
 st.set_page_config(page_title="إنشاء مقال جديد", layout="centered")
-st.markdown(
-    """
-    <style>
-        /* General Styling for Page */
-        .header-text {
-            font-size: 26px;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .description-text {
-            font-size: 18px;
-            text-align: right;
-            color: gray;
-            margin-bottom: 10px;
-        }
-
-        /* Input Styling */
-        .search-input input {
-            font-size: 18px;
-            padding: 12px;
-            width: 100%;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-sizing: border-box;
-        }
-
-        /* Button Styling */
-        .stButton button {
-            font-size: 18px;
-            color: white;
-            background-color: #4CAF50;
-            border: none;
-            border-radius: 8px;
-            padding: 12px;
-            width: 100%;
-            margin-top: 10px;
-            cursor: pointer;
-        }
-        .stButton button:hover {
-            background-color: #45a049;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 
 def create_new_article_page():
     demo_util.clear_other_page_session_state(page_index=3)
@@ -61,24 +14,38 @@ def create_new_article_page():
         st.session_state["page3_write_article_state"] = "not started"
 
     # Page Header
-    st.markdown("<div class='header-text'>إنشاء مقال جديد</div>", unsafe_allow_html=True)
+    st.markdown(
+        "<h1 style='font-size: 26px; font-weight: bold; text-align: center; margin-bottom: 20px;'>إنشاء مقال جديد</h1>",
+        unsafe_allow_html=True
+    )
     
     if st.session_state["page3_write_article_state"] == "not started":
         # Display instructions above the search box
         st.markdown(
-            "<div class='description-text'>يرجى إدخال الموضوع الذي ترغب في التعمق في تعلمه</div>", 
+            "<p style='font-size: 18px; text-align: right; color: gray; margin-bottom: 10px;'>يرجى إدخال الموضوع الذي ترغب في التعمق في تعلمه</p>", 
             unsafe_allow_html=True
         )
 
-        # Search form with Arabic placeholder
+        # Search form with Arabic placeholder and inline styling
         with st.form(key='search_form'):
             topic_input = st.text_input(
                 label='page3_topic',
                 placeholder="اكتب موضوع المقال هنا...",
                 label_visibility="collapsed",
-                key="page3_topic_input"
+                key="page3_topic_input",
+                help=None
             )
-            submit_button = st.form_submit_button(label="بحث")
+            
+            submit_button = st.form_submit_button(
+                label="بحث",
+                help=None,
+                style=(
+                    "display: block; font-size: 18px; color: white; background-color: #4CAF50; "
+                    "border: none; border-radius: 8px; padding: 12px; width: 100%; "
+                    "margin-top: 10px; cursor: pointer; text-align: center;"
+                )
+            )
+            
             st.session_state["page3_topic"] = topic_input + " (يجب أن تكون المصادر عربية)"
             
             # Handle form submission
@@ -128,7 +95,13 @@ def create_new_article_page():
             st.session_state["page3_write_article_state"] = "prepare_to_show_result"
 
     if st.session_state["page3_write_article_state"] == "prepare_to_show_result":
-        if st.button("عرض المقال النهائي"):
+        if st.button(
+            "عرض المقال النهائي",
+            style=(
+                "display: block; font-size: 18px; color: white; background-color: #4CAF50; "
+                "border: none; border-radius: 8px; padding: 12px; width: 100%; margin-top: 20px;"
+            )
+        ):
             st.session_state["page3_write_article_state"] = "completed"
             st.experimental_rerun()
 
@@ -141,4 +114,3 @@ def create_new_article_page():
             show_title=True, 
             show_main_article=True
         )
-
