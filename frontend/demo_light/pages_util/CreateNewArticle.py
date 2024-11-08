@@ -26,20 +26,17 @@ def create_new_article_page():
             unsafe_allow_html=True
         )
 
-        # Search form with Arabic placeholder and inline styling
+        # Search form with Arabic label
         with st.form(key='search_form'):
+            # Text input for the search topic with no placeholder
             topic_input = st.text_input(
-                label='page3_topic',
-                placeholder="اكتب موضوع المقال هنا...",
-                label_visibility="collapsed",
-                key="page3_topic_input",
-                help=None
+                label='',
+                key="page3_topic_input"
             )
-            
-            # Submit button for the form
+
+            # Custom styled submit button for the form
             submit_button = st.form_submit_button(
-                label="بحث",
-                help=None
+                label="بحث"
             )
 
             st.session_state["page3_topic"] = topic_input + " (يجب أن تكون المصادر عربية)"
@@ -52,6 +49,25 @@ def create_new_article_page():
                     st.session_state["page3_write_article_state"] = "initiated"
                     st.session_state["page3_topic_name_cleaned"] = topic_input.replace(' ', '_').replace('/', '_')
                     st.session_state["page3_topic_name_truncated"] = truncate_filename(st.session_state["page3_topic_name_cleaned"])
+
+        # Additional CSS to remove form border and increase button width
+        st.markdown("""
+            <style>
+                /* Remove form border */
+                .stForm { 
+                    border: none !important;
+                }
+
+                /* Center and widen submit button */
+                .stForm button[type="submit"] {
+                    display: block;
+                    margin: 20px auto 0 auto;
+                    width: 50%;
+                    font-size: 16px;
+                    padding: 10px;
+                }
+            </style>
+        """, unsafe_allow_html=True)
 
     if st.session_state["page3_write_article_state"] == "initiated":
         current_working_dir = os.path.join(demo_util.get_demo_dir(), "DEMO_WORKING_DIR")
@@ -91,10 +107,7 @@ def create_new_article_page():
             st.session_state["page3_write_article_state"] = "prepare_to_show_result"
 
     if st.session_state["page3_write_article_state"] == "prepare_to_show_result":
-        if st.button(
-            "عرض المقال النهائي",
-            help=None
-        ):
+        if st.button("عرض المقال النهائي"):
             st.session_state["page3_write_article_state"] = "completed"
             st.experimental_rerun()
 
