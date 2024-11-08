@@ -89,17 +89,34 @@ def create_new_article_page():
         st.markdown('<div class="center-container">', unsafe_allow_html=True)
 
         # Custom HTML input field
-        user_input = st.text_area(
+        topic_input = st.text_input(
             label="",
             key="page3_topic_input",
             placeholder="أدخل الموضوع هنا",
-            height=40,
             max_chars=200
         )
 
-        # Submit button (Streamlit)
+        # Apply custom style to the input field
+        st.markdown(f"""
+            <style>
+                #{st.session_state['page3_topic_input']} {{
+                    font-size: 16px;
+                    padding: 12px;
+                    width: 70%;
+                    border: 2px solid #ddd;
+                    border-radius: 8px;
+                    text-align: center;
+                    transition: border-color 0.3s ease;
+                }}
+                #{st.session_state['page3_topic_input']}:focus {{
+                    border-color: #4CAF50;
+                    outline: none;
+                }}
+            </style>
+        """, unsafe_allow_html=True)
+
+        # Submit button with custom style
         if st.button("بحث"):
-            topic_input = user_input
             st.session_state["page3_topic"] = topic_input + " (يجب أن تكون المصادر عربية)"
             
             if not topic_input.strip():
