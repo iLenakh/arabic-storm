@@ -1,8 +1,6 @@
 import os
-import time
-import demo_util
 import streamlit as st
-from demo_util import DemoFileIOHelper, DemoTextProcessingHelper, DemoUIHelper, truncate_filename
+from demo_util import DemoFileIOHelper, demo_util, truncate_filename
 
 # Set page configuration
 st.set_page_config(page_title="إنشاء مقال جديد", layout="centered")
@@ -26,29 +24,25 @@ def create_new_article_page():
             unsafe_allow_html=True
         )
 
-        # Custom style for centering the text input and button
+        # Custom HTML form with full control over styling
         st.markdown("""
             <style>
-                /* Center both the input field and button */
-                .center-container {
+                .custom-form-container {
                     display: flex;
-                    justify-content: center;
-                    align-items: center;
                     flex-direction: column;
-                    width: 100%;
+                    align-items: center;
+                    justify-content: center;
                 }
 
-                /* Style the custom text input */
                 .custom-input {
-                    width: 70%;  /* Full width */
+                    width: 70%;
                     padding: 12px;
                     font-size: 16px;
                     border: 2px solid #ddd;
                     border-radius: 8px;
                     margin-bottom: 20px;
-                    box-sizing: border-box;  /* Ensure padding does not affect the width */
+                    text-align: center;
                     transition: border-color 0.3s ease;
-                    text-align: center;  /* Center text inside input */
                 }
 
                 .custom-input:focus {
@@ -56,9 +50,7 @@ def create_new_article_page():
                     outline: none;
                 }
 
-                /* Custom button style */
                 .custom-button {
-                    display: inline-block;
                     padding: 12px 24px;
                     font-size: 16px;
                     background-color: #4CAF50;
@@ -66,68 +58,38 @@ def create_new_article_page():
                     border: none;
                     border-radius: 8px;
                     cursor: pointer;
-                    text-align: center;
                     width: 70%;
-                    margin-top: 20px;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-                    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+                    transition: background-color 0.3s ease;
                 }
 
                 .custom-button:hover {
                     background-color: #45a049;
-                    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-                }
-
-                /* Hide the default Streamlit text input field */
-                .streamlit-expanderHeader {
-                    display: none;
                 }
             </style>
         """, unsafe_allow_html=True)
 
-        # Container to center input and button
-        st.markdown('<div class="center-container">', unsafe_allow_html=True)
-
-        # Custom HTML input field
-        topic_input = st.text_input(
-            label="",
-            key="page3_topic_input",
-            placeholder="أدخل الموضوع هنا",
-            max_chars=200
-        )
-
-        # Apply custom style to the input field
-        st.markdown(f"""
-            <style>
-                input[type="text"] {{
-                    font-size: 16px;
-                    padding: 12px;
-                    width: 70%;
-                    border: 2px solid #ddd;
-                    border-radius: 8px;
-                    text-align: center;
-                    transition: border-color 0.3s ease;
-                }}
-                input[type="text"]:focus {{
-                    border-color: #4CAF50;
-                    outline: none;
-                }}
-            </style>
+        # Custom HTML for input and button
+        st.markdown("""
+            <div class="custom-form-container">
+                <input id="topic_input" class="custom-input" type="text" placeholder="أدخل الموضوع هنا" />
+                <button class="custom-button" onclick="submitForm()">بحث</button>
+            </div>
         """, unsafe_allow_html=True)
 
-        # Submit button with custom style
-        if st.button("بحث"):
-            st.session_state["page3_topic"] = topic_input + " (يجب أن تكون المصادر عربية)"
-            
-            if not topic_input.strip():
-                st.warning("لا يمكن ترك الموضوع فارغًا", icon="⚠️")
-            else:
-                st.session_state["page3_write_article_state"] = "initiated"
-                st.session_state["page3_topic_name_cleaned"] = topic_input.replace(' ', '_').replace('/', '_')
-                st.session_state["page3_topic_name_truncated"] = truncate_filename(st.session_state["page3_topic_name_cleaned"])
-
-        # Closing container div
-        st.markdown('</div>', unsafe_allow_html=True)
+        # JavaScript to handle button click and capture input
+        st.markdown("""
+            <script>
+                function submitForm() {
+                    var topic = document.getElementById('topic_input').value;
+                    if (topic.trim() === '') {
+                        alert('لا يمكن ترك الموضوع فارغًا');
+                    } else {
+                        // Store the topic in session state
+                        window.parent.postMessage({type: 'setSessionState', key: 'page3_topic', value: topic}, '*');
+                    }
+                }
+            </script>
+        """, unsafe_allow_html=True)
 
     # Handle states for writing articles (same logic as before)
 
