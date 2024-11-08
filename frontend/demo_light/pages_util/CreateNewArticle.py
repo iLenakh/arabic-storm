@@ -55,13 +55,13 @@ def create_new_article_page():
                     width: 90%;
                     padding: 12px;
                     font-size: 16px;
-                    border: 2px solid #ddd;
+                    border: 2px solid ;
                     border-radius: 18px;
                     margin-bottom: 20px;
                 }
 
                 input[type="text"]:focus {
-                    border-color: #4C78AFFF;
+                    border-color: #068246FF;
                     outline: none;
                 }
 
@@ -72,7 +72,7 @@ def create_new_article_page():
                     width: 90%;
                     font-size: 16px;
                     padding: 12px;
-                    background-color: #4C78AFFF;
+                    background-color: #97B8E0FF;
                     color: white;
                     border: none;
                     border-radius: 8px;
@@ -82,7 +82,7 @@ def create_new_article_page():
                 }
 
                 button:hover {
-                    background-color:  #4C78AFFF;
+                    background-color:  #A8BFDCFF;
                     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
                 }
 
