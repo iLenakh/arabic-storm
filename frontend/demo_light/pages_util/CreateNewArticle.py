@@ -27,10 +27,9 @@ def create_new_article_page():
         )
 
         # Text input for the search topic with no placeholder
-        # topic_input = st.text_input(
-        #     label='',
-        #     placeholder="أدخل الموضوع هنا"
-        # )
+        topic_input = st.text_input(
+            label='',
+        )
 
         # Custom styled submit button
         submit_button = st.button("بحث")
@@ -54,15 +53,15 @@ def create_new_article_page():
                     width: 90%;
                     padding: 20px;
                     font-size: 16px;
-                    border: 2px solid ;
+                    # border: 2px solid ;
                     border-radius: 18px;
                     margin-bottom: 20px;
                 }
 
-                input[type="text"]:focus {
-                    border-color: #068246FF;
-                    outline: none;
-                }
+                # input[type="text"]:focus {
+                #     border-color: #068246FF;
+                #     outline: none;
+                # }
 
                 /* Style the submit button */
                 button {
