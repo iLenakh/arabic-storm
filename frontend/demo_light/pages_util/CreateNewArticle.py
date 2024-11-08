@@ -37,7 +37,7 @@ def create_new_article_page():
             # Custom styled submit button for the form
             submit_button = st.form_submit_button(
                 label="بحث"
-            )
+            ) 
 
             st.session_state["page3_topic"] = topic_input + " (يجب أن تكون المصادر عربية)"
             
@@ -50,7 +50,7 @@ def create_new_article_page():
                     st.session_state["page3_topic_name_cleaned"] = topic_input.replace(' ', '_').replace('/', '_')
                     st.session_state["page3_topic_name_truncated"] = truncate_filename(st.session_state["page3_topic_name_cleaned"])
 
-        # Additional CSS to remove form border and increase button width
+        # Additional CSS to remove form border, and style the button
         st.markdown("""
             <style>
                 /* Remove form border */
@@ -60,13 +60,29 @@ def create_new_article_page():
                     padding: 0 !important;
                 }
 
-                /* Center and widen submit button */
+                /* Center and style submit button */
                 button[type="submit"] {
                     display: block;
                     margin: 20px auto 0 auto;
                     width: 70%;
                     font-size: 16px;
-                    padding: 10px;
+                    padding: 12px 24px;
+                    background-color: #4CAF50;
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                    cursor: pointer;
+                    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+                }
+
+                button[type="submit"]:hover {
+                    background-color: #45a049;
+                    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+                }
+
+                button[type="submit"]:focus {
+                    outline: none;
                 }
             </style>
         """, unsafe_allow_html=True)
