@@ -1,15 +1,15 @@
 import os
 import streamlit as st
 from authlib.integrations.requests_client import OAuth2Session
-from streamlit_cookies_manager import CookieManager
+# from streamlit_cookies_manager import CookieManager
 
 # Google OAuth 2.0 Configuration
 GOOGLE_CLIENT_ID = st.secrets["GOOGLE_CLIENT_ID"]
 GOOGLE_CLIENT_SECRET = st.secrets["GOOGLE_CLIENT_SECRET"]
 REDIRECT_URI = "https://arabic-storm.streamlit.app"
 
-# Initialize CookieManager
-cookies = CookieManager()
+# Initialize CookieManager (Commented Out)
+# cookies = CookieManager()
 
 # Function to handle Google login
 def google_login():
@@ -23,13 +23,13 @@ def google_login():
         "https://accounts.google.com/o/oauth2/auth"
     )
 
-    # Ensure cookies are ready before setting the state
-    if cookies.ready():
-        # Save the state in cookies for security
-        cookies["oauth_state"] = state
-        cookies.save()
-    else:
-        st.warning("Cookies are not ready yet. Please reload the page.")
+    # Ensure cookies are ready before setting the state (Commented Out)
+    # if cookies.ready():
+    #     # Save the state in cookies for security
+    #     cookies["oauth_state"] = state
+    #     cookies.save()
+    # else:
+    #     st.warning("Cookies are not ready yet. Please reload the page.")
 
     st.write(f"[Click here to log in with Google]({authorization_url})")
 
@@ -40,17 +40,18 @@ def handle_google_callback():
     if "logged_in" in st.session_state and st.session_state["logged_in"]:
         return
 
-    # Ensure cookies are ready before retrieving values
-    if not cookies.ready():
-        st.warning("Cookies are not ready yet. Please reload the page.")
-        return
+    # Ensure cookies are ready before retrieving values (Commented Out)
+    # if not cookies.ready():
+    #     st.warning("Cookies are not ready yet. Please reload the page.")
+    #     return
 
     # Retrieve authorization code and state from query parameters
     code = st.query_params.get("code")
     state = st.query_params.get("state")
 
-    # Check that state matches
-    if not code or state != cookies.get("oauth_state"):
+    # Check that state matches (Commented Out)
+    # if not code or state != cookies.get("oauth_state"):
+    if not code:
         st.error("Authorization failed. Please log in again.")
         return
 
