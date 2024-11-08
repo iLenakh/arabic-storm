@@ -26,7 +26,7 @@ def create_new_article_page():
             unsafe_allow_html=True
         )
 
-        # Text input for the search topic with no placeholder
+        # Custom style for centering the text input
         topic_input = st.text_input(
             label='',
             key="page3_topic_input",
@@ -36,33 +36,70 @@ def create_new_article_page():
         # Custom button using HTML and CSS
         st.markdown("""
             <style>
+                /* Center both the input field and button */
+                .center-container {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    flex-direction: column;
+                    width: 100%;
+                }
+
+                /* Style the text input */
+                input[type="text"] {
+                    width: 70%;  /* Full width */
+                    padding: 12px;
+                    font-size: 16px;
+                    border: 2px solid #ddd;
+                    border-radius: 8px;
+                    margin-bottom: 20px;
+                    box-sizing: border-box;  /* Ensure padding does not affect the width */
+                    transition: border-color 0.3s ease;
+                    text-align: center;  /* Center text inside input */
+                }
+
+                input[type="text"]:focus {
+                    border-color: #4CAF50;
+                    outline: none;
+                }
+
+                /* Custom button style */
                 .custom-button {
                     display: inline-block;
                     padding: 12px 24px;
                     font-size: 16px;
-                    background-color: #15636FFF;
+                    background-color:#3B8A97FF;
                     color: white;
                     border: none;
                     border-radius: 8px;
                     cursor: pointer;
                     text-align: center;
-                    width: 70%;
+                    width: 50%;
                     margin-top: 20px;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-                  
+                   
                 }
 
                 .custom-button:hover {
-                    background-color: #80BCC5FF;
-                 
+                    background-color:#77BBC6FF;
+                    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
                 }
+
+                /* Ensure the button is centered */
+                button {
+                    display: block;
+                    margin: 0 auto;
+                }
+
             </style>
-            <a href="javascript:void(0);" class="custom-button" onclick="window.location.href='/';">بحث</a>
         """, unsafe_allow_html=True)
 
-        # Custom button functionality (using session state flag)
-        if st.session_state.get("page3_topic_input"):
-            st.session_state["page3_topic"] = st.session_state["page3_topic_input"] + " (يجب أن تكون المصادر عربية)"
+        # Container to center input and button
+        st.markdown('<div class="center-container">', unsafe_allow_html=True)
+
+        # Button and input field container
+        if st.button("بحث"):
+            topic_input = st.session_state["page3_topic_input"]
+            st.session_state["page3_topic"] = topic_input + " (يجب أن تكون المصادر عربية)"
             
             if not topic_input.strip():
                 st.warning("لا يمكن ترك الموضوع فارغًا", icon="⚠️")
@@ -70,6 +107,9 @@ def create_new_article_page():
                 st.session_state["page3_write_article_state"] = "initiated"
                 st.session_state["page3_topic_name_cleaned"] = topic_input.replace(' ', '_').replace('/', '_')
                 st.session_state["page3_topic_name_truncated"] = truncate_filename(st.session_state["page3_topic_name_cleaned"])
+
+        # Closing container div
+        st.markdown('</div>', unsafe_allow_html=True)
 
     # Handle states for writing articles (same logic as before)
 
