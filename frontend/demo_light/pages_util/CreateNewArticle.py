@@ -99,7 +99,7 @@ def create_new_article_page():
         # Apply custom style to the input field
         st.markdown(f"""
             <style>
-                #{st.session_state['page3_topic_input']} {{
+                input[type="text"] {{
                     font-size: 16px;
                     padding: 12px;
                     width: 70%;
@@ -108,7 +108,7 @@ def create_new_article_page():
                     text-align: center;
                     transition: border-color 0.3s ease;
                 }}
-                #{st.session_state['page3_topic_input']}:focus {{
+                input[type="text"]:focus {{
                     border-color: #4CAF50;
                     outline: none;
                 }}
