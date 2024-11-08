@@ -26,47 +26,53 @@ def create_new_article_page():
             unsafe_allow_html=True
         )
 
-        # Search form with Arabic label
-        with st.form(key='search_form'):
-            # Text input for the search topic with no placeholder
-            topic_input = st.text_input(
-                label='',
-                key="page3_topic_input"
-            )
+        # Text input for the search topic with no placeholder
+        topic_input = st.text_input(
+            label='',
+            key="page3_topic_input",
+            placeholder="أدخل الموضوع هنا"
+        )
 
-            # Custom styled submit button for the form
-            submit_button = st.form_submit_button(
-                label="بحث"
-            ) 
+        # Custom styled submit button
+        submit_button = st.button("بحث")
 
-            st.session_state["page3_topic"] = topic_input + " (يجب أن تكون المصادر عربية)"
+        st.session_state["page3_topic"] = topic_input + " (يجب أن تكون المصادر عربية)"
             
-            # Handle form submission
-            if submit_button:
-                if not topic_input.strip():
-                    st.warning("لا يمكن ترك الموضوع فارغًا", icon="⚠️")
-                else:
-                    st.session_state["page3_write_article_state"] = "initiated"
-                    st.session_state["page3_topic_name_cleaned"] = topic_input.replace(' ', '_').replace('/', '_')
-                    st.session_state["page3_topic_name_truncated"] = truncate_filename(st.session_state["page3_topic_name_cleaned"])
+        # Handle form submission
+        if submit_button:
+            if not topic_input.strip():
+                st.warning("لا يمكن ترك الموضوع فارغًا", icon="⚠️")
+            else:
+                st.session_state["page3_write_article_state"] = "initiated"
+                st.session_state["page3_topic_name_cleaned"] = topic_input.replace(' ', '_').replace('/', '_')
+                st.session_state["page3_topic_name_truncated"] = truncate_filename(st.session_state["page3_topic_name_cleaned"])
 
-        # Additional CSS to remove form border, and style the button
+        # Additional CSS to remove form border, style input and button
         st.markdown("""
             <style>
-                /* Remove form border */
-                div[role="form"] {
-                    box-shadow: none;
-                    border: none !important;
-                    padding: 0 !important;
+                /* Style the text input */
+                input[type="text"] {
+                    width: 100%;
+                    padding: 12px;
+                    font-size: 16px;
+                    border: 2px solid #ddd;
+                    border-radius: 8px;
+                    margin-bottom: 20px;
+                    transition: border-color 0.3s ease;
                 }
 
-                /* Center and style submit button */
-                button[type="submit"] {
+                input[type="text"]:focus {
+                    border-color: #4CAF50;
+                    outline: none;
+                }
+
+                /* Style the submit button */
+                button {
                     display: block;
-                    margin: 20px auto 0 auto;
+                    margin: 20px auto;
                     width: 70%;
                     font-size: 16px;
-                    padding: 12px 24px;
+                    padding: 12px;
                     background-color: #4CAF50;
                     color: white;
                     border: none;
@@ -76,12 +82,12 @@ def create_new_article_page():
                     transition: background-color 0.3s ease, box-shadow 0.3s ease;
                 }
 
-                button[type="submit"]:hover {
+                button:hover {
                     background-color: #45a049;
                     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
                 }
 
-                button[type="submit"]:focus {
+                button:focus {
                     outline: none;
                 }
             </style>
