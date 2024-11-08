@@ -52,7 +52,7 @@ def create_new_article_page():
                 /* Style the text input */
                 input[type="text"] {
                     width: 90%;
-                    padding: 12px;
+                    padding: 20px;
                     font-size: 16px;
                     border: 2px solid ;
                     border-radius: 18px;
