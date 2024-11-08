@@ -53,36 +53,20 @@ def create_new_article_page():
         # Additional CSS to remove form border, and style the button
         st.markdown("""
             <style>
-                /* Remove form border and padding */
+                /* Remove form border */
                 div[role="form"] {
                     box-shadow: none;
                     border: none !important;
                     padding: 0 !important;
                 }
 
-                /* Style the text input */
-                input[type="text"] {
-                    width: 100%;
-                    padding: 12px;
-                    font-size: 16px;
-                    border: 2px solid #ddd;
-                    border-radius: 8px;
-                    margin-bottom: 20px;
-                    transition: border-color 0.3s ease;
-                }
-
-                input[type="text"]:focus {
-                    border-color: #4CAF50;
-                    outline: none;
-                }
-
-                /* Style the submit button */
+                /* Center and style submit button */
                 button[type="submit"] {
                     display: block;
-                    margin: 20px auto;
+                    margin: 20px auto 0 auto;
                     width: 70%;
                     font-size: 16px;
-                    padding: 12px;
+                    padding: 12px 24px;
                     background-color: #4CAF50;
                     color: white;
                     border: none;
