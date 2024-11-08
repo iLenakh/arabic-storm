@@ -40,7 +40,7 @@ def create_new_article_page():
                     display: inline-block;
                     padding: 12px 24px;
                     font-size: 16px;
-                    background-color: #4CAF50;
+                    background-color: #15636FFF;
                     color: white;
                     border: none;
                     border-radius: 8px;
@@ -49,12 +49,12 @@ def create_new_article_page():
                     width: 70%;
                     margin-top: 20px;
                     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-                    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+                  
                 }
 
                 .custom-button:hover {
-                    background-color: #45a049;
-                    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+                    background-color: #80BCC5FF;
+                 
                 }
             </style>
             <a href="javascript:void(0);" class="custom-button" onclick="window.location.href='/';">بحث</a>
