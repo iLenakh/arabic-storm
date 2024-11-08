@@ -68,20 +68,19 @@ def create_new_article_page():
                     display: inline-block;
                     padding: 12px 24px;
                     font-size: 16px;
-                    background-color:#3B8A97FF;
+                    background-color:#8DACBFFF;
                     color: white;
                     border: none;
                     border-radius: 8px;
                     cursor: pointer;
                     text-align: center;
-                    width: 50%;
+                    width: 10%;
                     margin-top: 20px;
                    
                 }
 
                 .custom-button:hover {
-                    background-color:#77BBC6FF;
-                    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+                    background-color:#76A0BAFF;
                 }
 
                 /* Ensure the button is centered */
