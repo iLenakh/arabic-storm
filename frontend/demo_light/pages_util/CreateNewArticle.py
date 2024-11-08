@@ -36,16 +36,12 @@ def create_new_article_page():
                 help=None
             )
             
+            # Submit button for the form
             submit_button = st.form_submit_button(
                 label="بحث",
-                help=None,
-                style=(
-                    "display: block; font-size: 18px; color: white; background-color: #4CAF50; "
-                    "border: none; border-radius: 8px; padding: 12px; width: 100%; "
-                    "margin-top: 10px; cursor: pointer; text-align: center;"
-                )
+                help=None
             )
-            
+
             st.session_state["page3_topic"] = topic_input + " (يجب أن تكون المصادر عربية)"
             
             # Handle form submission
@@ -97,10 +93,7 @@ def create_new_article_page():
     if st.session_state["page3_write_article_state"] == "prepare_to_show_result":
         if st.button(
             "عرض المقال النهائي",
-            style=(
-                "display: block; font-size: 18px; color: white; background-color: #4CAF50; "
-                "border: none; border-radius: 8px; padding: 12px; width: 100%; margin-top: 20px;"
-            )
+            help=None
         ):
             st.session_state["page3_write_article_state"] = "completed"
             st.experimental_rerun()
