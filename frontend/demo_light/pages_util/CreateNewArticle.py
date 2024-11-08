@@ -29,7 +29,6 @@ def create_new_article_page():
         # Text input for the search topic with no placeholder
         topic_input = st.text_input(
             label='',
-            key="page3_topic_input",
             placeholder="أدخل الموضوع هنا"
         )
 
