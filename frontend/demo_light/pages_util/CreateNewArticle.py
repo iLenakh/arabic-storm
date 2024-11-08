@@ -50,12 +50,12 @@ def create_new_article_page():
             <style>
                 /* Style the text input */
                 input[type="text"] {
-                    width: 90%;
-                    padding: 20px;
+                    width: 80%;
+                    padding: 12px;
                     font-size: 16px;
-                    # border: 2px solid ;
                     border-radius: 18px;
                     margin-bottom: 20px;
+                    border-color: #068246FF;
                 }
 
                 # input[type="text"]:focus {
