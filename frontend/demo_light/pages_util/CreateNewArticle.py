@@ -78,6 +78,10 @@ def create_new_article_page():
                     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
                 }
 
+                /* Hide the default Streamlit text input field */
+                .streamlit-expanderHeader {
+                    display: none;
+                }
             </style>
         """, unsafe_allow_html=True)
 
@@ -89,7 +93,8 @@ def create_new_article_page():
             label="",
             key="page3_topic_input",
             placeholder="أدخل الموضوع هنا",
-            height=40
+            height=40,
+            max_chars=200
         )
 
         # Submit button (Streamlit)
