@@ -52,28 +52,27 @@ def create_new_article_page():
             <style>
                 /* Style the text input */
                 input[type="text"] {
-                    width: 100%;
+                    width: 90%;
                     padding: 12px;
                     font-size: 16px;
                     border: 2px solid #ddd;
-                    border-radius: 8px;
+                    border-radius: 18px;
                     margin-bottom: 20px;
-                    transition: border-color 0.3s ease;
                 }
 
                 input[type="text"]:focus {
-                    border-color: #4CAF50;
+                    border-color: #4C78AFFF;
                     outline: none;
                 }
 
                 /* Style the submit button */
                 button {
                     display: block;
-                    margin: 20px auto;
-                    width: 70%;
+                    margin: 2px auto;
+                    width: 90%;
                     font-size: 16px;
                     padding: 12px;
-                    background-color: #4CAF50;
+                    background-color: #4C78AFFF;
                     color: white;
                     border: none;
                     border-radius: 8px;
@@ -83,7 +82,7 @@ def create_new_article_page():
                 }
 
                 button:hover {
-                    background-color: #45a049;
+                    background-color:  #4C78AFFF;
                     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
                 }
 
