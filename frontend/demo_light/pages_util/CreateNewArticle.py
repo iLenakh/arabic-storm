@@ -54,15 +54,17 @@ def create_new_article_page():
         st.markdown("""
             <style>
                 /* Remove form border */
-                .stForm { 
+                div[role="form"] {
+                    box-shadow: none;
                     border: none !important;
+                    padding: 0 !important;
                 }
 
                 /* Center and widen submit button */
-                .stForm button[type="submit"] {
+                button[type="submit"] {
                     display: block;
                     margin: 20px auto 0 auto;
-                    width: 50%;
+                    width: 70%;
                     font-size: 16px;
                     padding: 10px;
                 }
