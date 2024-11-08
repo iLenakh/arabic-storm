@@ -27,10 +27,10 @@ def create_new_article_page():
         )
 
         # Text input for the search topic with no placeholder
-        topic_input = st.text_input(
-            label='',
-            placeholder="أدخل الموضوع هنا"
-        )
+        # topic_input = st.text_input(
+        #     label='',
+        #     placeholder="أدخل الموضوع هنا"
+        # )
 
         # Custom styled submit button
         submit_button = st.button("بحث")
