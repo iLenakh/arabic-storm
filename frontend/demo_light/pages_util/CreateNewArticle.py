@@ -56,6 +56,8 @@ def create_new_article_page():
                     border-radius: 18px;
                     margin-bottom: 20px;
                     border-color: #068246FF;
+                    background-color: #F24CDCFF;
+
                 }
 
                 # input[type="text"]:focus {
