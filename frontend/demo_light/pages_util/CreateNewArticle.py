@@ -29,15 +29,41 @@ def create_new_article_page():
         # Text input for the search topic with no placeholder
         topic_input = st.text_input(
             label='',
+            key="page3_topic_input",
+            placeholder="أدخل الموضوع هنا"
         )
 
-        # Custom styled submit button
-        submit_button = st.button("بحث")
+        # Custom button using HTML and CSS
+        st.markdown("""
+            <style>
+                .custom-button {
+                    display: inline-block;
+                    padding: 12px 24px;
+                    font-size: 16px;
+                    background-color: #4CAF50;
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    text-align: center;
+                    width: 70%;
+                    margin-top: 20px;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+                }
 
-        st.session_state["page3_topic"] = topic_input + " (يجب أن تكون المصادر عربية)"
+                .custom-button:hover {
+                    background-color: #45a049;
+                    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+                }
+            </style>
+            <a href="javascript:void(0);" class="custom-button" onclick="window.location.href='/';">بحث</a>
+        """, unsafe_allow_html=True)
+
+        # Custom button functionality (using session state flag)
+        if st.session_state.get("page3_topic_input"):
+            st.session_state["page3_topic"] = st.session_state["page3_topic_input"] + " (يجب أن تكون المصادر عربية)"
             
-        # Handle form submission
-        if submit_button:
             if not topic_input.strip():
                 st.warning("لا يمكن ترك الموضوع فارغًا", icon="⚠️")
             else:
@@ -45,52 +71,7 @@ def create_new_article_page():
                 st.session_state["page3_topic_name_cleaned"] = topic_input.replace(' ', '_').replace('/', '_')
                 st.session_state["page3_topic_name_truncated"] = truncate_filename(st.session_state["page3_topic_name_cleaned"])
 
-        # Additional CSS to remove form border, style input and button
-        st.markdown("""
-            <style>
-                /* Style the text input */
-                input[type="text"] {
-                    width: 80%;
-                    padding: 12px;
-                    font-size: 16px;
-                    border-radius: 18px;
-                    margin-bottom: 20px;
-                    border-color: #068246FF;
-                    background-color: #F24CDCFF;
-
-                }
-
-                # input[type="text"]:focus {
-                #     border-color: #068246FF;
-                #     outline: none;
-                # }
-
-                /* Style the submit button */
-                button {
-                    display: block;
-                    margin: 2px auto;
-                    width: 90%;
-                    font-size: 16px;
-                    padding: 12px;
-                    background-color: #97B8E0FF;
-                    color: white;
-                    border: none;
-                    border-radius: 8px;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-                    cursor: pointer;
-                    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-                }
-
-                button:hover {
-                    background-color:  #A8BFDCFF;
-                    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-                }
-
-                button:focus {
-                    outline: none;
-                }
-            </style>
-        """, unsafe_allow_html=True)
+    # Handle states for writing articles (same logic as before)
 
     if st.session_state["page3_write_article_state"] == "initiated":
         current_working_dir = os.path.join(demo_util.get_demo_dir(), "DEMO_WORKING_DIR")
