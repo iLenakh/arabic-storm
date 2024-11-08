@@ -26,14 +26,7 @@ def create_new_article_page():
             unsafe_allow_html=True
         )
 
-        # Custom style for centering the text input
-        topic_input = st.text_input(
-            label='',
-            key="page3_topic_input",
-            placeholder="أدخل الموضوع هنا"
-        )
-
-        # Custom button using HTML and CSS
+        # Custom style for centering the text input and button
         st.markdown("""
             <style>
                 /* Center both the input field and button */
@@ -45,8 +38,8 @@ def create_new_article_page():
                     width: 100%;
                 }
 
-                /* Style the text input */
-                input[type="text"] {
+                /* Style the custom text input */
+                .custom-input {
                     width: 70%;  /* Full width */
                     padding: 12px;
                     font-size: 16px;
@@ -58,7 +51,7 @@ def create_new_article_page():
                     text-align: center;  /* Center text inside input */
                 }
 
-                input[type="text"]:focus {
+                .custom-input:focus {
                     border-color: #4CAF50;
                     outline: none;
                 }
@@ -68,26 +61,21 @@ def create_new_article_page():
                     display: inline-block;
                     padding: 12px 24px;
                     font-size: 16px;
-                    background-color:#3B8A97FF;
+                    background-color: #4CAF50;
                     color: white;
                     border: none;
                     border-radius: 8px;
                     cursor: pointer;
                     text-align: center;
-                    width: 50%;
+                    width: 70%;
                     margin-top: 20px;
-                   
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                    transition: background-color 0.3s ease, box-shadow 0.3s ease;
                 }
 
                 .custom-button:hover {
-                    background-color:#77BBC6FF;
+                    background-color: #45a049;
                     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-                }
-
-                /* Ensure the button is centered */
-                button {
-                    display: block;
-                    margin: 0 auto;
                 }
 
             </style>
@@ -96,9 +84,17 @@ def create_new_article_page():
         # Container to center input and button
         st.markdown('<div class="center-container">', unsafe_allow_html=True)
 
-        # Button and input field container
+        # Custom HTML input field
+        user_input = st.text_area(
+            label="",
+            key="page3_topic_input",
+            placeholder="أدخل الموضوع هنا",
+            height=40
+        )
+
+        # Submit button (Streamlit)
         if st.button("بحث"):
-            topic_input = st.session_state["page3_topic_input"]
+            topic_input = user_input
             st.session_state["page3_topic"] = topic_input + " (يجب أن تكون المصادر عربية)"
             
             if not topic_input.strip():
